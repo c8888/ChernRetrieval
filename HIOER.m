@@ -11,13 +11,13 @@
 (* :Copyright: (c) 2016 c8888 *)
 (* :Keywords: *)
 (* :Discussion: This package includes the methods for Hybrid Input-Output Error Reduction Phase Retrieval Algorithm.
-                Whereever possible, numerical operations are parallelized.*)
+                Wherever possible, numerical operations are parallelized.*)
 
 BeginPackage["HIOER`"]
 (* Exported symbols added here with SymbolName::usage *)
 
 phaseRetrieveSupport::usage =
-    "phaseRetrieveSupport[FTXAbs, RTF, nIterations, nHIO] returns a table of retrieved complex X from its reciprocal space representation absolute value FTXAbs.
+    "phaseRetrieveSupport[FTXAbs, RTF, nIterations, nHIO] returns a table of retrieved complex X from its (representation in reciprocal space) absolute value FTXAbs.
     Support is defined to be 1 over the circle of radius RTF and 0 elsewhere. Performs nIterations HIOER iterations."
 phaseRetrieveGuess::usage =
     "phaseRetrieveGuess[FTXAbs, XAbsGuess, nHIO] returns a table of retrieved complex X from its reciprocal space representation absolute value FTXAbs.
