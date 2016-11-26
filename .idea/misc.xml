@@ -48,6 +48,10 @@
     <ConfirmationsSetting value="0" id="Add" />
     <ConfirmationsSetting value="0" id="Remove" />
   </component>
+  <component name="ProjectPlainTextFileTypeManager">
+    <file url="file://$PROJECT_DIR$/ChernRetrieval.nb" />
+    <file url="file://$PROJECT_DIR$/Debug.nb" />
+  </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_3" default="false" assert-keyword="false" jdk-15="false" project-jdk-name="Mathematica 11.0.1.0" project-jdk-type="Mathematica Sdk">
     <output url="file://$PROJECT_DIR$/out" />
   </component>

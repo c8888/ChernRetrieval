@@ -17,13 +17,13 @@ BeginPackage["protocoling`"]
 
 protocolSet[folder, processID]::usage =
     "protocolSetName[folder, processID] creates a new protocol file folder/processID.dat and returns the protocol name object"
-protocolAdd[protocol, stringMessage]::usage =
-    "protocolAdd[protocol, stringMessage] adds stringMessage at the end of protocol file"
-protocolMaxMemoryUsed[protocol]::usage =
-    "protocolMaxMemoryUsed[protocol] adds information about max memory used (in GB) in current kernel session"
+protocolAdd[stringMessage]::usage =
+    "protocolAdd[stringMessage] adds stringMessage at the end of protocol file"
+protocolMaxMemoryUsed[]::usage =
+    "protocolMaxMemoryUsed[] adds information about max memory used (in GB) in current kernel session"
 
 Begin["`Private`"]
-
+PutAppend[{k,i}, "out/" <> ToString[$ProcessID] <> "iterations.dat"];
 End[] (* `Private` *)
 
 EndPackage[]
