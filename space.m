@@ -107,7 +107,7 @@ rectLatticeSitesNeighbourhood[rectLatticeSitesPos_, latticeProbingPoints_, \[Del
         }
       }
     ]&, rectLatticeSitesPos];
-  Return[ret]
+  Return[ret] (**)
 ]
 
 
