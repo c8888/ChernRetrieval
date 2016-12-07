@@ -27,7 +27,7 @@ wannier::usage =
     "wannier[{x,y}, {xi, yi}, \[Sigma]w, \[Beta]] returns value of wannier function localized at {xj, yj}. \[Sigma]w is the Gauss peak width and \[Beta] is the normalisation factor."
 wannierNormalisationFactor::usage =
     "wannierNormalisationFactor[\[Sigma]w_, \[Delta]x_, \[Delta]y_, latticeProbingPoints_] returns a normalisation factor for Wannier function localized at {0,0}"
-blochSphereAnglesHarper[{kx,ky}]::usage =
+blochSphereAnglesHarper::usage =
     "blochSphereAnglesHarper[{kx,ky}] calculates the angles {\[Theta]k, \[Phi]k} in Bloch sphere representation from a Harper Hamiltonian"
 
 Begin["`Private`"]
@@ -55,12 +55,42 @@ blochSphereAnglesHarper[k_, J_, J1_] := Module[{
   h = {-J - J1 Cos[2 k[[1]] ], J1 Sin[2 k[[1]] ], -2 J Cos[ k[[2]] ] }
 },
   {
-    ArcTan[ h[[2]] / h[[1]] ],
-    ArcSin[ h[[3]] / Norm[h] ]
+    N@ArcTan[ h[[2]] / h[[1]] ],
+    N@ArcSin[ h[[3]] / Norm[h] ]
   }
 ]
 
-waveFunctionHarperK[k_, \[Phi]k, \[Theta]k, n] :=
+
+waveFunctionHarper[latticeProbingPoints_, ax_, ay_, J_, J1_, rectLatticeSites_, RTF_, k0_, \[Sigma]w_, wannierNormalisationFactor_] :=
+    Module[{
+  \[Theta]k = blochSphereAnglesHarper[k0, J, J1][[1]],
+  \[Phi]k = blochSphereAnglesHarper[k0, J, J1][[2]]
+    },
+  Module[{
+    ret = Chop[
+        Map[
+          Function[r,
+            Total[
+              Map[
+                Which[
+                  #[[2]] == 1 && #[[1, 2]] != 0, Sin[ \[Theta]k / 2 ] * Exp[I k0[[2]] * ay / #[[1, 2]]] * wannier[r, #[[1]], \[Sigma]w, wannierNormalisationFactor], (* Site A *)
+                  #[[2]] == 1 && #[[1, 2]] == 0, Sin[ \[Theta]k / 2 ] * wannier[r, #[[1]], \[Sigma]w, wannierNormalisationFactor], (* Site A *)
+                  #[[2]] == -1 && #[[1, 2]] != 0, Cos[ \[Theta]k / 2 ] * Exp[I \[Phi]k] * Exp[I k0[[1]] ] * Exp[I k0[[2]] * ay / #[[1, 2]]] * wannier[r, #[[1]], \[Sigma]w, wannierNormalisationFactor], (* Site B *)
+                  #[[2]] == -1 && #[[1, 2]] == 0, Cos[ \[Theta]k / 2 ] * Exp[I \[Phi]k] * Exp[I k0[[1]] ] * wannier[r, #[[1]], \[Sigma]w, wannierNormalisationFactor] (* Site B *)
+                  ] &,
+                rectLatticeSites[[1]]
+              ]
+            ]
+          ][#]&,
+          latticeProbingPoints
+        ]
+      ]
+    },
+    ret/Sqrt[Total[Abs[ret]^2]]
+  ]
+  ]
+
+
 
 
 
