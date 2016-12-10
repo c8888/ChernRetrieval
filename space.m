@@ -35,10 +35,9 @@ rectLatticeBrillouinZonePoints::usage =
     "
 honeycombLatticeBrillouinZonePoints[a, \[Delta]x, \[Delta]y]::usage =
     "honeycombLatticeBrillouinZonePoints[a, \[Delta]x, \[Delta]y] generates a (flattened) 1D list of the points {x_i,y_i} in the first Brillouin zone for the honeycomb lattice, with spacing \[Delta]x, \[Delta]y"
-
-mirror2DSpace[latticeProbingPointsValue]::usage =
-    "mirrorSpace[latticeProbingPointsValue] mirrors the 2Dtable with respect to x and y axes"
 *)
+mirror2DSpace::usage =
+    "mirror2DSpace[FT0] mirrors the 2Dtable with respect to x and y axes"
 
 Begin["`Private`"]
 
@@ -63,7 +62,8 @@ rectLatticeSites[a_, RTF_, xmin_, xmax_, ymin_, ymax_]:=
       ]
 
 
-rectLatticeSitesPos[latticeProbingPoints_, a_, \[Delta]x_, \[Delta]y_] := Module[{
+rectLatticeSitesPos[latticeProbingPoints_, a_, \[Delta]x_, \[Delta]y_, RTF_] := Module[{
+  ret0 = {},
   ret = {},
   istart = 0,
   iNeigh = {},
@@ -87,8 +87,11 @@ rectLatticeSitesPos[latticeProbingPoints_, a_, \[Delta]x_, \[Delta]y_] := Module
     ]
   ];
 
+
   (*namely Cartesian product of the two lists*)
-  Return[Flatten[Outer[{#1, #2} &, iNeigh, jNeigh], 1]]
+  ret0 = Flatten[Outer[{#1, #2} &, iNeigh, jNeigh], 1];
+  Map[If[Norm@latticeProbingPoints[[ #[[1]], #[[2]] ]] <= RTF, AppendTo[ret, #]]&, ret0];
+  Return[ret]
 ]
 
 rectLatticeSitesNeighbourhood[rectLatticeSitesPos_, latticeProbingPoints_, \[Delta]x_, \[Delta]y_, rangeNeighbour_]:= Module[{
@@ -109,6 +112,46 @@ rectLatticeSitesNeighbourhood[rectLatticeSitesPos_, latticeProbingPoints_, \[Del
     ]&, rectLatticeSitesPos];
   Return[ret] (**)
 ]
+
+mirror2DSpace[FT0_] :=
+    Module[{
+      FT = FT0,
+      nCol = Dimensions[FT0][[1]],
+      nRow = Dimensions[FT0][[2]],
+      ret,
+      firstQuad,
+      secondQuad,
+      thirdQuad,
+      fourthQuad},
+    (* read quads *)
+
+      firstQuad = FT[[1 ;; Floor[0.5*nCol], 1 ;; Floor[0.5*nRow]]];
+      secondQuad = FT[[1 ;; Floor[0.5*nCol], Floor[0.5*nRow] + 1 ;; nRow]];
+      thirdQuad =
+          FT[[Floor[0.5*nCol] + 1 ;; nCol, 1 ;; Floor[0.5*nRow]]];
+      fourthQuad =
+          FT[[Floor[0.5*nCol] + 1 ;; nCol, Floor[0.5*nRow] + 1 ;; nRow]];
+
+      (* Mirror *)
+      firstQuad = Reverse[Reverse[firstQuad], 2];
+      secondQuad = Reverse[Reverse[secondQuad], 2];
+      thirdQuad = Reverse[Reverse[thirdQuad], 2];
+      fourthQuad = Reverse[Reverse[fourthQuad], 2];
+
+      (* Take back together and return *)
+      ret = Table[
+        Which[
+          i <= Floor[0.5*nCol] && j <= Floor[0.5*nRow], firstQuad[[i, j]],
+          i <= Floor[0.5*nCol] && j > Floor[0.5*nRow],
+          secondQuad[[i, j - Floor[0.5*nRow]]],
+          i > Floor[0.5*nCol] && j <= Floor[0.5*nRow],
+          thirdQuad[[i - Floor[0.5*nCol], j]],
+          i > Floor[0.5*nCol] && j > Floor[0.5*nRow],
+          fourthQuad[[i - Floor[0.5*nCol], j - Floor[0.5*nRow]]]
+        ],
+        {i, nCol}, {j, nRow}
+      ]
+    ]
 
 
 End[] (* `Private` *)

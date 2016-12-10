@@ -34,7 +34,7 @@ Begin["`Private`"]
 
 wannierNormalisationFactor[\[Sigma]w_, \[Delta]x_, \[Delta]y_, latticeProbingPoints_] := 1/Sqrt[
         Total[
-          Chop@Map[wannier[#, {0, 0}, \[Sigma]w, 1] &, latticeProbingPoints]^2
+          Chop@Map[wannier[#, {0, 0}, \[Sigma]w, 1] &, Flatten[latticeProbingPoints, 1]]^2
         ] * \[Delta]x * \[Delta]y
     ]
 
@@ -61,33 +61,33 @@ blochSphereAnglesHarper[k_, J_, J1_] := Module[{
 ]
 
 
-waveFunctionHarper[latticeProbingPoints_, ax_, ay_, J_, J1_, rectLatticeSites_, RTF_, k0_, \[Sigma]w_, wannierNormalisationFactor_] :=
+waveFunctionHarper[latticeProbingPoints_, a_, J_, J1_, rectLatticeSites_, RTF_, k0_, \[Sigma]w_, wannierNormalisationFactor_] :=
     Module[{
   \[Theta]k = blochSphereAnglesHarper[k0, J, J1][[1]],
-  \[Phi]k = blochSphereAnglesHarper[k0, J, J1][[2]]
+  \[Phi]k = blochSphereAnglesHarper[k0, J, J1][[2]],
+      ret
     },
-  Module[{
-    ret = Chop[
-        Map[
-          Function[r,
-            Total[
-              Map[
-                Which[
-                  #[[2]] == 1 && #[[1, 2]] != 0, Sin[ \[Theta]k / 2 ] * Exp[I k0[[2]] * ay / #[[1, 2]]] * wannier[r, #[[1]], \[Sigma]w, wannierNormalisationFactor], (* Site A *)
-                  #[[2]] == 1 && #[[1, 2]] == 0, Sin[ \[Theta]k / 2 ] * wannier[r, #[[1]], \[Sigma]w, wannierNormalisationFactor], (* Site A *)
-                  #[[2]] == -1 && #[[1, 2]] != 0, Cos[ \[Theta]k / 2 ] * Exp[I \[Phi]k] * Exp[I k0[[1]] ] * Exp[I k0[[2]] * ay / #[[1, 2]]] * wannier[r, #[[1]], \[Sigma]w, wannierNormalisationFactor], (* Site B *)
-                  #[[2]] == -1 && #[[1, 2]] == 0, Cos[ \[Theta]k / 2 ] * Exp[I \[Phi]k] * Exp[I k0[[1]] ] * wannier[r, #[[1]], \[Sigma]w, wannierNormalisationFactor] (* Site B *)
-                  ] &,
-                rectLatticeSites[[1]]
-              ]
+      ret = Chop[
+      Map[
+        Function[r,
+          Total[
+            Map[
+              If[
+                Abs[Norm[r] - Norm[#[[1]]]] < 5 \[Sigma]w && Norm[RTF]^2 > Norm[r]^2,
+            Which[
+                  #[[2]] == 1 , Sqrt[Norm[RTF]^2 - Norm[r]^2] Sin[ \[Theta]k / 2 ] * Exp[I k0.#[[1]] ] * wannier[r, #[[1]], \[Sigma]w, wannierNormalisationFactor], (* Site A *)
+                  #[[2]] == -1 , Sqrt[Norm[RTF]^2 - Norm[r]^2] Cos[ \[Theta]k / 2 ] * Exp[I \[Phi]k] * Exp[I k0.#[[1]] ] * wannier[r, #[[1]], \[Sigma]w, wannierNormalisationFactor] (* Site B *)
+                  ],
+                0 (*When too far from a node*)
+              ] &,
+              rectLatticeSites
             ]
-          ][#]&,
-          latticeProbingPoints
-        ]
+          ]
+        ][#]&,
+        latticeProbingPoints,{2}
       ]
-    },
-    ret/Sqrt[Total[Abs[ret]^2]]
-  ]
+    ];
+    ret/Sqrt[Total[Total[Abs[ret]^2]]]
   ]
 
 
