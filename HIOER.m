@@ -29,12 +29,17 @@ phaseRetrieveGuess::usage =
 Begin["`Private`"]
 
 
-phaseRetrieveSupport[FTXAbs_, support_, nIterations_, nRepeats_, nHIO_]:= (* returns table of a retrieved object *)
+phaseRetrieveSupport[FTXAbs_, wavefAbs_, support_, nIterations_, nRepeats_, nHIO_, beta_]:= (* returns table of a retrieved object *)
     Module[ {
-      nCol = Dimensions[FTXAbs][1],
-      nRow = Dimensions[FTXAbs][2]
+      nCol = Dimensions[FTXAbs][[1]],
+      nRow = Dimensions[FTXAbs][[2]],
+      xi=Table[RandomComplex[], Dimensions[FTXAbs][[1]], Dimensions[FTXAbs][[2]]], (* random initialization, different complex numbers at each repetition *)
+      xiprim,
+      xierror,
+      retrerror,
+      retr
       },
-      xi=Table[RandomComplex[], nCol, nRow]; (* random initialization, different complex numbers at each repetition *)
+
       For[k = 0, k < nRepeats, k++,
         For[i = 0, i < nIterations, i++,
           (*protocolAdd[{"Repeat, Iteration: ", {k,i}}];*)
@@ -49,7 +54,7 @@ phaseRetrieveSupport[FTXAbs_, support_, nIterations_, nRepeats_, nHIO_]:= (* ret
           (* ER case *)
             xi=wavefAbs*Exp[I*Arg[xi]]];
         ];
-        xierror=Total@Total@Abs[Abs[Fourier[xi]]^2-Abs[FTwavefAbs]^2];
+        xierror=Total@Total@Abs[Abs[Fourier[xi]]^2-Abs[FTXAbs]^2];
         If[k == 0, retrerror=xierror;];
         If[xierror<=retrerror, retr=xi; retrerror=xierror;, Null;, retr=xi]; (* error estimator *)
       (* backup mod *) (*Export["retrieved_insite_nRepeat="<>ToString[k]<>"_nIterations="<>ToString[nIterations]<>"_RTF="<>ToString[RTF]<>"_sigma_n="<>ToString[\[Sigma]n]<>".dat", xi];*)
