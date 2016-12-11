@@ -13,6 +13,7 @@
 (* :Discussion: *)
 
 BeginPackage["wavefunction`"]
+Needs["space`"]
 (* Exported symbols added here with SymbolName::usage *)
 waveFunctionHarperK::usage =
     "waveFunctionHarperK[{kx,ky}, \[Phi]k, \[Theta]k, n] returns a value of Harper wave function of n-th energy band in momentum space at {kx,ky} in the
@@ -29,12 +30,19 @@ wannierNormalisationFactor::usage =
     "wannierNormalisationFactor[\[Sigma]w_, \[Delta]x_, \[Delta]y_, latticeProbingPoints_] returns a normalisation factor for Wannier function localized at {0,0}"
 blochSphereAnglesHarper::usage =
     "blochSphereAnglesHarper[{kx,ky}] calculates the angles {\[Theta]k, \[Phi]k} in Bloch sphere representation from a Harper Hamiltonian"
+wannierBaseRectProject::usage =
+"wannierBaseRectProject[waveFunction_, latticeProbingPoints_, rectLatticeSites_, rectLatticeSitesPos_, rectLatticeSitesNeighbourhood_, \[Sigma]w_, wannierNormalisationFactor_, \[Delta]x_, \[Delta]y_]
+returns a wave function in a basis of orthonormal wannier functions"
+J1phi::usage =
+    "J1[k, \[Phi], J] returns value of tunneling in one direction based on the hamiltonian"
+ComplexDotProduct::usage =
+    "ComplexDotProduct[x_, y_] := Chop[Dot[x, Conjugate[y]]]"
 
 Begin["`Private`"]
 
 wannierNormalisationFactor[\[Sigma]w_, \[Delta]x_, \[Delta]y_, latticeProbingPoints_] := 1/Sqrt[
-        Total[
-          Chop@Map[wannier[#, {0, 0}, \[Sigma]w, 1] &, Flatten[latticeProbingPoints, 1]]^2
+        Total@Total[
+          Chop@Map[wannier[#, {0, 0}, \[Sigma]w, 1] &, latticeProbingPoints, {2}]^2
         ] * \[Delta]x * \[Delta]y
     ]
 
@@ -55,13 +63,13 @@ blochSphereAnglesHarper[k_, J_, J1_] := Module[{
   h = {-J - J1 Cos[2 k[[1]] ], J1 Sin[2 k[[1]] ], -2 J Cos[ k[[2]] ] }
 },
   {
-    N@ArcTan[ h[[2]] / h[[1]] ],
-    N@ArcSin[ h[[3]] / Norm[h] ]
+    N@ArcCos[ h[[3]] / Norm[h] ], (*theta*)
+    N@ArcTan[ h[[1]], h[[2]] ] (*phi*)
   }
 ]
 
 
-waveFunctionHarper[latticeProbingPoints_, a_, J_, J1_, rectLatticeSites_, RTF_, k0_, \[Sigma]w_, wannierNormalisationFactor_] :=
+waveFunctionHarper[latticeProbingPoints_, a_, J_, J1_, rectLatticeSites_, RTF_, k0_, \[Sigma]w_, wannierNormalisationFactor_, \[Delta]x_, \[Delta]y_] :=
     Module[{
   \[Theta]k = blochSphereAnglesHarper[k0, J, J1][[1]],
   \[Phi]k = blochSphereAnglesHarper[k0, J, J1][[2]],
@@ -87,12 +95,20 @@ waveFunctionHarper[latticeProbingPoints_, a_, J_, J1_, rectLatticeSites_, RTF_, 
         latticeProbingPoints,{2}
       ]
     ];
-    ret/Sqrt[Total[Total[Abs[ret]^2]]]
+    ret/Sqrt[Total[Total[Abs[ret]^2]] * \[Delta]x * \[Delta]y]
   ]
 
+wannierBaseRectProject[waveFunction_, latticeProbingPoints_, rectLatticeSites_, rectLatticeSitesPos_, rectLatticeSitesNeighbourhood_, \[Sigma]w_, wannierNormalisationFactor_, \[Delta]x_, \[Delta]y_] := Table[
+  Sum[
+    Chop[wannier[latticeProbingPoints[[i, j]], rectLatticeSites[[q,1]], \[Sigma]w, wannierNormalisationFactor ] ]*
+        waveFunction[[i, j]],
+    {i, rectLatticeSitesNeighbourhood[[q, 1, 1]],
+      rectLatticeSitesNeighbourhood[[q, 2, 1]]}, {j,
+    rectLatticeSitesNeighbourhood[[q, 1, 2]], rectLatticeSitesNeighbourhood[[q, 2, 2]]}
+  ],
+  {q, Length@rectLatticeSitesPos}] * \[Delta]x * \[Delta]y
 
-
-
+ComplexDotProduct[x_, y_] := Chop[Dot[x, Conjugate[y]]]
 
 End[] (* `Private` *)
 

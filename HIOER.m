@@ -29,16 +29,21 @@ phaseRetrieveGuess::usage =
 Begin["`Private`"]
 
 
-phaseRetrieveSupport[FTXAbs_, wavefAbs_, support_, nIterations_, nRepeats_, nHIO_, beta_]:= (* returns table of a retrieved object *)
+phaseRetrieveSupport[FTXAbs_, wavefAbs_, support_, nIterations_, nRepeats_, nHIO_, gamma_]:= (* returns table of a retrieved object *)
     Module[ {
-      nCol = Dimensions[FTXAbs][[1]],
-      nRow = Dimensions[FTXAbs][[2]],
-      xi=Table[RandomComplex[], Dimensions[FTXAbs][[1]], Dimensions[FTXAbs][[2]]], (* random initialization, different complex numbers at each repetition *)
-      xiprim,
+      nCol,
+      nRow,
+      xi={},
+      xiprim={},
       xierror,
       retrerror,
-      retr
+      retr={},
+      FTxi={},
+      FTxi2={}
       },
+      {nCol, nRow} = Dimensions[FTXAbs];
+      xi=Table[RandomComplex[], nCol, nRow]; (* random initialization, different complex numbers at each repetition *)
+
 
       For[k = 0, k < nRepeats, k++,
         For[i = 0, i < nIterations, i++,
@@ -48,9 +53,9 @@ phaseRetrieveSupport[FTXAbs_, wavefAbs_, support_, nIterations_, nRepeats_, nHIO
           FTxi2 = FTXAbs*Exp[I*Arg[FTxi]];
           xi = InverseFourier[FTxi2];
           If[Unequal[Mod[i,nHIO],0],
-          (* HIO case *) xi=ParallelTable[If[support[[q,w]] == 1,
+          (* HIO case *) xi=Table[If[support[[q,w]] == 1,
           (* inside support*) wavefAbs[[q,w]]*Exp[I*Arg[xi[[q,w]]]],
-          (* outside support *) xiprim[[q,w]]-beta*xi[[q,w]] ],{q,nCol},{w,nRow}];  ,
+          (* outside support *) xiprim[[q,w]]-gamma*xi[[q,w]] ],{q,nCol},{w,nRow}];  ,
           (* ER case *)
             xi=wavefAbs*Exp[I*Arg[xi]]];
         ];
@@ -60,6 +65,7 @@ phaseRetrieveSupport[FTXAbs_, wavefAbs_, support_, nIterations_, nRepeats_, nHIO
       (* backup mod *) (*Export["retrieved_insite_nRepeat="<>ToString[k]<>"_nIterations="<>ToString[nIterations]<>"_RTF="<>ToString[RTF]<>"_sigma_n="<>ToString[\[Sigma]n]<>".dat", xi];*)
       ];
       Return[retr]; (* returned value *)
+
     ]
 
 End[] (* `Private` *)
