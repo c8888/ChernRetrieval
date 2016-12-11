@@ -17,7 +17,8 @@ BeginPackage["space`"]
 
 latticeProbingPoints::usage =
     "latticeProbingPoints[xmin, xmax, ymin, ymax, \[Delta]x, \[Delta]y] generates a list of points {{x_i, y_i}} at which one measures physical variables of BEC in a trap"
-
+latticeProbingPointsBZ::usage =
+    "latticeProbingPointsBZ[npts_, a_, q_] gives a 2D (npts x npts) array of points in the 1st Brillouin zone"
 rectLatticeSites::usage =
     "rectLatticeSites[ax, ay, RTF, latticeProbingPoints] generates a list: {{x_i,y_i},type_i} are the rectangular lattice sites, where type_i is the i-th lattice site type (-1 - type A or 1 - type B)
     "
@@ -45,6 +46,13 @@ Begin["`Private`"]
 
 latticeProbingPoints[xmin_, xmax_, ymin_, ymax_, \[Delta]x_, \[Delta]y_]:=
     Table[{x,y}, {x,xmin,xmax,\[Delta]x}, {y,ymin,ymax,\[Delta]y}]
+
+latticeProbingPointsBZ[npts_, a_, q_]:= Module[{ (*we assume p=1 in p/q*2Pi flux*)
+  dkx = 2 Pi/(q * a) /npts,
+  dky = 2 Pi/a/npts
+},
+    N@Table[{kx, ky}, {kx, dkx, dkx*npts, dkx}, {ky, dky, dky*npts, dky}]
+  ]
 
 rectLatticeSites[a_, RTF_, xmin_, xmax_, ymin_, ymax_]:=
     Module[ {

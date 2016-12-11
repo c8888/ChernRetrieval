@@ -15,16 +15,16 @@
 BeginPackage["protocoling`"]
 (* Exported symbols added here with SymbolName::usage *)
 
-protocolSet[folder, processID]::usage =
-    "protocolSet[folder, processID] creates a new protocol file folder/processID.dat and returns the protocol name object"
-protocolAdd[stringMessage]::usage =
+protocolSet::usage =
+    "protocolSet[folder] creates a new protocol file folder/processID.dat and returns the protocol name object"
+protocolAdd::usage =
     "protocolAdd[stringMessage] adds stringMessage at the end of protocol file"
-protocolMaxMemoryUsed[]::usage =
+protocolMaxMemoryUsed::usage =
     "protocolMaxMemoryUsed[] adds information about max memory used (in GB) in current kernel session"
 
 Begin["`Private`"]
-protocolSet
-PutAppend[{k,i}, "out/" <> ToString[$ProcessID] <> "iterations.dat"];
+
+
 End[] (* `Private` *)
 
 EndPackage[]
