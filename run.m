@@ -16,11 +16,11 @@ PutAppend[ToString[DateList[]] <> "Program started.", "out/" <> ToString[$Proces
 \[Delta]x = 0.1;
 \[Delta]y = 0.1;
 q = 2; (* Pi-flux *)
-xmin = -2;
-xmax = 2;
-ymin = -2;
-ymax = 2;
-RTF = 2;
+xmin = -8;
+xmax = 8;
+ymin = -8;
+ymax = 8;
+RTF = 6;
 rangeNeighbour = 0.6;
 a = 1;
 \[Sigma]w = 0.2;
@@ -29,11 +29,11 @@ select the energy band here (let's say its the lowest energy band). I \
 don't know the tunneling amplitude ratio but can guess it *)
 J = 1;
 J1 = 2;
-nIterations = 50;
-nRepeats = 1;
+nIterations = 300;
+nRepeats = 3;
 nHIO = 20;
 gamma = 0.9;
-npts = 5;(*points in the 1st Brillouin zone*)
+npts = 8;(*points in the 1st Brillouin zone*)
 (**************************************************************)
 
 lat = latticeProbingPoints[xmin, xmax, ymin,
