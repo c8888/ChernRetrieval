@@ -40,7 +40,7 @@ findCkRetr[k_, J_, J1_, lat_, a_, rec_, RTF_, support_,nIterations_,nRepeats_,nH
       wannierBaseRectProject[
         phaseRetrieveSupport[Abs@Fourier@wavef, Abs@wavef, support,
           nIterations, nRepeats, nHIO, gamma], lat, rec, pos,
-        neighpos, \[Sigma]w, \[Beta], \[Delta]x, \[Delta]y]
+        neighpos, \[Sigma]w, \[Beta], \[Delta]x, \[Delta]y, RTF]
 ]
 
 findCkModel[k_, J_, J1_, lat_, a_, rec_, RTF_, support_, nIterations_,
@@ -50,7 +50,8 @@ findCkModel[k_, J_, J1_, lat_, a_, rec_, RTF_, support_, nIterations_,
         waveFunctionHarper[lat, a, J, J1, rec, RTF,
           k, \[Sigma]w, \[Beta], \[Delta]x, \[Delta]y]},
       wannierBaseRectProject[wavef, lat, rec, pos,
-        neighpos, \[Sigma]w, \[Beta], \[Delta]x, \[Delta]y]]
+        neighpos, \[Sigma]w, \[Beta], \[Delta]x, \[Delta]y, RTF]
+    ]
 
 link[ckBZ_, i1_, j1_, i2_, j2_] :=
     Exp[I Arg@ComplexDotProduct[ckBZ[[i2, j2]], ckBZ[[i1, j1]] ] ]

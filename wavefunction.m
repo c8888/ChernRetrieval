@@ -98,10 +98,10 @@ waveFunctionHarper[latticeProbingPoints_, a_, J_, J1_, rectLatticeSites_, RTF_, 
     ret/Sqrt[Total[Total[Abs[ret]^2]] * \[Delta]x * \[Delta]y]
   ]
 
-wannierBaseRectProject[waveFunction_, latticeProbingPoints_, rectLatticeSites_, rectLatticeSitesPos_, rectLatticeSitesNeighbourhood_, \[Sigma]w_, wannierNormalisationFactor_, \[Delta]x_, \[Delta]y_] := Table[
+wannierBaseRectProject[waveFunction_, latticeProbingPoints_, rectLatticeSites_, rectLatticeSitesPos_, rectLatticeSitesNeighbourhood_, \[Sigma]w_, wannierNormalisationFactor_, \[Delta]x_, \[Delta]y_,RTF_] := Table[
   Sum[
     Chop[wannier[latticeProbingPoints[[i, j]], rectLatticeSites[[q,1]], \[Sigma]w, wannierNormalisationFactor ] ]*
-        waveFunction[[i, j]],
+        waveFunction[[i, j]]/If[Norm[RTF]>Norm[latticeProbingPoints[[i, j]]], Sqrt[Norm[RTF]^2-Norm[latticeProbingPoints[[i, j]]]^2], 1],
     {i, rectLatticeSitesNeighbourhood[[q, 1, 1]],
       rectLatticeSitesNeighbourhood[[q, 2, 1]]}, {j,
     rectLatticeSitesNeighbourhood[[q, 1, 2]], rectLatticeSitesNeighbourhood[[q, 2, 2]]}
@@ -109,6 +109,7 @@ wannierBaseRectProject[waveFunction_, latticeProbingPoints_, rectLatticeSites_, 
   {q, Length@rectLatticeSitesPos}] * \[Delta]x * \[Delta]y
 
 ComplexDotProduct[x_, y_] := Chop[Dot[x, Conjugate[y]]]
+
 
 End[] (* `Private` *)
 
