@@ -13,14 +13,14 @@ Needs["chernCalc`"];
 
 PutAppend[ToString[DateList[]] <> "Program started.", "out/" <> ToString[$ProcessID] <> "protocol.txt"];
 (**************************************************************)
-\[Delta]x = 0.1;
-\[Delta]y = 0.1;
+\[Delta]x = 0.5;
+\[Delta]y = 0.5;
 q = 2; (* Pi-flux *)
-xmin = -8;
-xmax = 8;
-ymin = -8;
-ymax = 8;
-RTF = 6;
+xmin = -2;
+xmax = 2;
+ymin = -2;
+ymax = 2;
+RTF = 2;
 rangeNeighbour = 0.6;
 a = 1;
 \[Sigma]w = 0.2;
@@ -29,11 +29,11 @@ select the energy band here (let's say its the lowest energy band). I \
 don't know the tunneling amplitude ratio but can guess it *)
 J = 1;
 J1 = 2;
-nIterations = 300;
-nRepeats = 3;
+nIterations = 100;
+nRepeats = 1;
 nHIO = 20;
 gamma = 0.9;
-npts = 8;(*points in the 1st Brillouin zone*)
+npts = 5;(*points in the 1st Brillouin zone*)
 (**************************************************************)
 
 lat = latticeProbingPoints[xmin, xmax, ymin,
@@ -59,7 +59,7 @@ ckModelBZ =
 FxyTModel = FxyT[ckModelBZ];
 wModel = 1/(2 \[Pi] I )*Chop@Total@Total[FxyTModel];
 PutAppend[ "wModel = " <> ToString[wModel], "out/" <> ToString[$ProcessID] <> "protocol.txt"];
-Export["out/ckModelBZ.dat", ckModelBZ];
+(*Export["out/ckModelBZ.dat", ckModelBZ];*)
 
 (**************************************************************)
 
@@ -71,6 +71,6 @@ ckRetrBZ =
 FxyTRetr = FxyT[ckRetrBZ];
 wRetr = 1/(2 \[Pi] I )*Chop@Total@Total[FxyTRetr];
 PutAppend[ "wRetr = " <> ToString[wRetr], "out/" <> ToString[$ProcessID] <> "protocol.txt"];
-Export["out/ckRetrBZ.dat", ckRetrBZ];
+(*Export["out/ckRetrBZ.dat", ckRetrBZ];*)
 
 
