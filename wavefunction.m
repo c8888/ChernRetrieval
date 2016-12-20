@@ -33,10 +33,14 @@ blochSphereAnglesHarper::usage =
 wannierBaseRectProject::usage =
 "wannierBaseRectProject[waveFunction_, latticeProbingPoints_, rectLatticeSites_, rectLatticeSitesPos_, rectLatticeSitesNeighbourhood_, \[Sigma]w_, wannierNormalisationFactor_, \[Delta]x_, \[Delta]y_]
 returns a wave function in a basis of orthonormal wannier functions"
-J1phi::usage =
-    "J1[k, \[Phi], J] returns value of tunneling in one direction based on the hamiltonian"
 ComplexDotProduct::usage =
     "ComplexDotProduct[x_, y_] := Chop[Dot[x, Conjugate[y]]]"
+
+wannierBaseABproject::usage =
+    "projects the wave function only on the two nodes A(0,0), B(0,1) in the centre"
+
+overlapWannier::usage =
+    "calculates overlap magnitude square when given wannier basis representation of wave functions"
 
 Begin["`Private`"]
 
@@ -98,7 +102,11 @@ waveFunctionHarper[latticeProbingPoints_, a_, J_, J1_, rectLatticeSites_, RTF_, 
     ret/Sqrt[Total[Total[Abs[ret]^2]] * \[Delta]x * \[Delta]y]
   ]
 
-wannierBaseRectProject[waveFunction_, latticeProbingPoints_, rectLatticeSites_, rectLatticeSitesPos_, rectLatticeSitesNeighbourhood_, \[Sigma]w_, wannierNormalisationFactor_, \[Delta]x_, \[Delta]y_,RTF_] := Table[
+wannierBaseRectProject[waveFunction_, latticeProbingPoints_, rectLatticeSites_, rectLatticeSitesPos_, rectLatticeSitesNeighbourhood_, \[Sigma]w_, wannierNormalisationFactor_, \[Delta]x_, \[Delta]y_,RTF_] :=
+    Module[{
+      ret
+    },
+      ret = Table[
   Sum[
     Chop[wannier[latticeProbingPoints[[i, j]], rectLatticeSites[[q,1]], \[Sigma]w, wannierNormalisationFactor ] ]*
         waveFunction[[i, j]]/If[Norm[RTF]>Norm[latticeProbingPoints[[i, j]]], Sqrt[Norm[RTF]^2-Norm[latticeProbingPoints[[i, j]]]^2], 1],
@@ -106,10 +114,29 @@ wannierBaseRectProject[waveFunction_, latticeProbingPoints_, rectLatticeSites_, 
       rectLatticeSitesNeighbourhood[[q, 2, 1]]}, {j,
     rectLatticeSitesNeighbourhood[[q, 1, 2]], rectLatticeSitesNeighbourhood[[q, 2, 2]]}
   ],
-  {q, Length@rectLatticeSitesPos}] * \[Delta]x * \[Delta]y
+  {q, Length@rectLatticeSitesPos}] * \[Delta]x * \[Delta]y;
+      ret*1/Sqrt@Total[Abs[ret]^2]
+      ]
 
 ComplexDotProduct[x_, y_] := Chop[Dot[x, Conjugate[y]]]
 
+wannierBaseABproject[waveFunction_, latticeProbingPoints_, rectLatticeSites_, rectLatticeSitesPos_, rectLatticeSitesNeighbourhood_, \[Sigma]w_, wannierNormalisationFactor_, \[Delta]x_, \[Delta]y_,RTF_] :=
+    Module[{
+    qApos = First@First@Position[rectLatticeSites, {0., 0.}];
+      qBpos = First@First@Position[rectLatticeSites, {0., 1.}];
+    },
+      Map[
+  Sum[
+    Chop[wannier[latticeProbingPoints[[i, j]], rectLatticeSites[[#,1]], \[Sigma]w, wannierNormalisationFactor ] ]*
+        waveFunction[[i, j]]/If[Norm[RTF]>Norm[latticeProbingPoints[[i, j]]], Sqrt[Norm[RTF]^2-Norm[latticeProbingPoints[[i, j]]]^2], 1],
+    {i, rectLatticeSitesNeighbourhood[[#, 1, 1]],
+      rectLatticeSitesNeighbourhood[[#, 2, 1]]}, {j,
+    rectLatticeSitesNeighbourhood[[#, 1, 2]], rectLatticeSitesNeighbourhood[[#, 2, 2]]}
+  ]&,
+  {qApos, qBpos}] * \[Delta]x * \[Delta]y
+]
+
+overlapWannier[ckModel_, ckRetr_]:= Abs[ComplexDotProduct[ckModel, ckRetr]]^2
 
 End[] (* `Private` *)
 
