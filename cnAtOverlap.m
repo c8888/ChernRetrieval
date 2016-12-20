@@ -16,23 +16,51 @@ protocolAdd[ToString[t1] <> " Program started."];
 \[Delta]x = 0.1;
 \[Delta]y = 0.1;
 q = 2; (* Pi-flux *)
-xmin = -1;
-xmax = 1;
-ymin = -1;
-ymax = 1;
-RTF = 1;
+xmin = -5;
+xmax = 5;
+ymin = -5;
+ymax = 5;
+RTF = 3.6;
 rangeNeighbour = 0.6;
 a = 1;
 \[Sigma]w = 0.2;
 k0 = {1, 2}; (* there is need to guess it from experimental data. One can use only the support too*)
 J = 1;
 J1 = 2;
-nIterations = 150;
-nRepeats = 1;
+nIterations = 500;
+nRepeats = 4;
 nHIO = 20;
 gamma = 0.9;
-npts = 4;(*points in the 1st Brillouin zone*)
+npts = 5;(*points in the 1st Brillouin zone*)
 (**************************************************************)
+iterStep = 50; (* every iterStep iterations the overlap and chern number are computed *)
+(***************z***********************************************)
+
+protocolBar[];
+protocolAdd["Parameters: "];
+protocolAdd["\[Delta]x = "<> ToString[\[Delta]x] ];
+protocolAdd["\[Delta]y = "<> ToString[\[Delta]y] ];
+protocolAdd["q = "<> ToString[q] ];
+protocolAdd["xmin = "<> ToString[xmin] ];
+protocolAdd["xmax = "<> ToString[xmax] ];
+protocolAdd["ymin = "<> ToString[ymin] ];
+protocolAdd["ymax = "<> ToString[ymax] ];
+protocolAdd["RTF = "<> ToString[RTF] ];
+protocolAdd["rangeNeighbour = "<> ToString[rangeNeighbour] ];
+protocolAdd["a = "<> ToString[a] ];
+protocolAdd["\[Sigma]w = "<> ToString[\[Sigma]w ] ];
+protocolAdd["k0 = "<> ToString[k0] ];
+protocolAdd["J = "<> ToString[J] ];
+protocolAdd["J1 = "<> ToString[J1] ];
+protocolAdd["nIterations = "<> ToString[nIterations] ];
+protocolAdd["nRepeats = "<> ToString[nRepeats] ];
+protocolAdd["nHIO = "<> ToString[nHIO] ];
+protocolAdd["gamma = "<> ToString[gamma] ];
+protocolAdd["npts = "<> ToString[npts] ];
+protocolBar[];
+(*************************************************************)
+protocolAdd["iterStep = "<> ToString[iterStep] ];
+(*************************************************************)
 
 lat = latticeProbingPoints[xmin, xmax, ymin,
   ymax, \[Delta]x, \[Delta]y];
@@ -54,8 +82,9 @@ wavef = waveFunctionHarper[lat, a, J, J1, rec, RTF,
   k0, \[Sigma]w, \[Beta], \[Delta]x, \[Delta]y];
 FTwavefAbs = Abs@Fourier@wavef;
 
-iterStep = 75; (* every iterStep iterations the overlap and chern number are computed *)
+
 protocolAdd[ "Repeat" <> " " <> "Iteration" <> " " <> "Chern number retr." <> " " <> "Mean overlap" <> " " <> " Standard deviation of overlap"];
+SetSharedVariable[overlapIter];
 overlapIter = {};
 
 (*modded phase retrieve to go into the process *)
@@ -72,10 +101,11 @@ phaseRetrieveSupportOverlap[FTXAbs_, support_, nIterations_, nRepeats_, nHIO_, g
       FTxi2={}
     },
       {nCol, nRow} = Dimensions[FTXAbs];
-      xi=Table[RandomComplex[], nCol, nRow]; (* random initialization, different complex numbers at each repetition *)
 
 
-      For[k = 0, k < nRepeats, k++,
+
+      For[k = 1, k <= nRepeats, k++,
+        xi=Table[RandomComplex[], nCol, nRow]; (* random initialization, different complex numbers at each repetition *)
         For[i = 0, i < nIterations, i++,
         (*protocolAdd[{"Repeat, Iteration: ", {k,i}}];*)
           xiprim = xi;
@@ -90,7 +120,7 @@ phaseRetrieveSupportOverlap[FTXAbs_, support_, nIterations_, nRepeats_, nHIO_, g
             xi*=support;]
           If[ Mod[i,iterStep] == 0,
             ckRetrBZ =
-                ParallelMap[
+                Map[
                   findCkRetr[#, J, J1, lat, a, rec, RTF, support, nIterations,
                     nRepeats, nHIO, gamma, pos,
                     neighpos, \[Sigma]w, \[Beta], \[Delta]x, \[Delta]y] &, BZ, {2}];
@@ -98,8 +128,8 @@ phaseRetrieveSupportOverlap[FTXAbs_, support_, nIterations_, nRepeats_, nHIO_, g
             wRetr = 1/(2 \[Pi] I )*Chop@Total@Total[FxyTRetr];
             AppendTo[overlapIter, {k, i, Re@wRetr, Mean@Flatten@ckRetrBZ[[All, All, 2]], StandardDeviation@Flatten@ckRetrBZ[[All, All, 2]]}];
 
-            protocolAdd[ ToString[k] <> " " <> ToString[i] <> " " <> ToString[Re@wRetr] <> " " <> ToString[Mean@Flatten@ckRetrBZ[[All, All, 2]] ]
-                <> " " <> ToString[StandardDeviation@Flatten@ckRetrBZ[[All, All, 2]] ] ];
+            (*protocolAdd[ ToString[k] <> " " <> ToString[i] <> " " <> ToString[Re@wRetr] <> " " <> ToString[Mean@Flatten@ckRetrBZ[[All, All, 2]] ]
+                <> " " <> ToString[StandardDeviation@Flatten@ckRetrBZ[[All, All, 2]] ] ];*)
 
           ];
         ];
@@ -112,7 +142,7 @@ phaseRetrieveSupportOverlap[FTXAbs_, support_, nIterations_, nRepeats_, nHIO_, g
 
     ]
 
-phaseRetrieveSupportOverlap[FTwavefAbs, support, nIterations, nRepeats, nHIO, gamma, iterStep];
+ParallelMap[phaseRetrieveSupportOverlap[FTwavefAbs, support, nIterations, 1, nHIO, gamma, iterStep] &, Table[n,{n,nRepeats}], DistributedContexts->All];
 
 Export["out/" <>ToString[Last@$CommandLine] <> "_" <> ToString[$ProcessID] <> "chernNumberAtOverlap.dat", overlapIter];
 

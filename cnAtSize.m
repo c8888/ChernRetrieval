@@ -13,39 +13,7 @@ Needs["chernCalc`"];
 t1 = DateList[];
 protocolAdd[ToString[t1] <> " Program started."];
 (**************************************************************)
-\[Delta]x = 0.3;
-\[Delta]y = 0.3;
-q = 2; (* Pi-flux *)
-(*xmin = -8;
-xmax = 8;
-ymin = -8;
-ymax = 8;
-RTF = 6;*)
-rangeNeighbour = 0.6;
-a = 1;
-\[Sigma]w = 0.2;
-k0 = {1, 2}; (* there is need to guess it from experimental data. One can use only the support too*)
-J = 1;
-J1 = 2;
-nIterations = 1;
-nRepeats = 3;
-nHIO = 20;
-gamma = 0.9;
-npts = 5;(*points in the 1st Brillouin zone*)
-(**************************************************************)
-RTFmin = 2.01; (*min and max must not be integers! TODO verify the bug*)
-RTFmax = 5.01;
-deltaRTF = 1;
-RTFRepeats = 2;
-
-margin[RTF_] := 0.3 RTF
-xmin[RTF_] := -RTF-margin[RTF]
-ymin[RTF_] := -RTF-margin[RTF]
-xmax[RTF_] := RTF+margin[RTF]
-ymax[RTF_] := RTF+margin[RTF]
-
-protocolAdd["Parameters: "];
-protocolAdd["\[Delta]x = 0.1;
+\[Delta]x = 0.1;
 \[Delta]y = 0.1;
 q = 2; (* Pi-flux *)
 (*xmin = -8;
@@ -59,24 +27,60 @@ a = 1;
 k0 = {1, 2}; (* there is need to guess it from experimental data. One can use only the support too*)
 J = 1;
 J1 = 2;
-nIterations = 500;
+nIterations = 100;
 nRepeats = 3;
 nHIO = 20;
 gamma = 0.9;
 npts = 5;(*points in the 1st Brillouin zone*)
 (**************************************************************)
-RTFmin = 2.01; (*min and max must not be integers! TODO verify the bug*)
-RTFmax = 10.01;
-deltaRTF = 0.5;
-RTFRepeats = 5;
+RTFmin = 2; (*TODO: Bug. RTF must not be an odd multiple of 0.5a*)
+RTFmax = 6;
+deltaRTF = 1./3.;
+RTFRepeats = 1;
 
-margin[RTF_] := 0.3 RTF"];
+margin[RTF_] := 0.3*RTF
+xmin[RTF_] := -RTF-margin[RTF]
+ymin[RTF_] := -RTF-margin[RTF]
+xmax[RTF_] := RTF+margin[RTF]
+ymax[RTF_] := RTF+margin[RTF]
+
+protocolBar[];
+protocolAdd["Parameters: "];
+protocolAdd["\[Delta]x = "<> ToString[\[Delta]x] ];
+protocolAdd["\[Delta]y = "<> ToString[\[Delta]y] ];
+protocolAdd["q = "<> ToString[q] ];
+protocolAdd["xmin = "<> ToString[xmin] ];
+protocolAdd["xmax = "<> ToString[xmax] ];
+protocolAdd["ymin = "<> ToString[ymin] ];
+protocolAdd["ymax = "<> ToString[ymax] ];
+protocolAdd["RTF = "<> ToString[RTF] ];
+protocolAdd["rangeNeighbour = "<> ToString[rangeNeighbour] ];
+protocolAdd["a = "<> ToString[a] ];
+protocolAdd["\[Sigma]w = "<> ToString[\[Sigma]w ] ];
+protocolAdd["k0 = "<> ToString[k0] ];
+protocolAdd["J = "<> ToString[J] ];
+protocolAdd["J1 = "<> ToString[J1] ];
+protocolAdd["nIterations = "<> ToString[nIterations] ];
+protocolAdd["nRepeats = "<> ToString[nRepeats] ];
+protocolAdd["nHIO = "<> ToString[nHIO] ];
+protocolAdd["gamma = "<> ToString[gamma] ];
+protocolAdd["npts = "<> ToString[npts] ];
+protocolBar[];
+(**************************************************************)
+protocolAdd["RTFmin = " <> ToString[RTFmin]];
+protocolAdd["RTFmax = " <> ToString[RTFmax]];
+protocolAdd["deltaRTF = " <> ToString[deltaRTF]];
+protocolAdd["RTFRepeats = " <> ToString[RTFRepeats]];
+protocolAdd["margin = " <> ToString[margin[RTF]]];
+
+protocolBar[];
 
 protocolAdd["Results: "];
 
 protocolAdd[ "RTF" <> " " <> "Chern_number_retr." <> " " <> "Mean overlap" <> " " <> " Standard deviation of overlap"];
 
 RTFTab = Table[r,{r, RTFmin, RTFmax, deltaRTF}]; (* this table will be probed*)
+SetSharedVariable[RTFReport];
 RTFReport = {};
 
 BZ = latticeProbingPointsBZ[npts, a, q];
@@ -110,18 +114,19 @@ FxyTRetr = FxyT[ ckRetrBZ[[All, All, 1]] ];
 wRetr = 1/(2 \[Pi] I )*Chop@Total@Total[FxyTRetr];
 AppendTo[RTFReport, {#, Re@wRetr, Mean@Flatten@ckRetrBZ[[All, All, 2]], StandardDeviation@Flatten@ckRetrBZ[[All, All, 2]]}];
 protocolAdd[ ToString[#] <> " " <> ToString[Re@wRetr] <> " " <> ToString[Mean@Flatten@ckRetrBZ[[All, All, 2]] ]
-    <> " " <> ToString[StandardDeviation@Flatten@ckRetrBZ[[All, All, 2]] ] ];
+    <> " " <> ToString[StandardDeviation@Flatten@ckRetrBZ[[All, All, 2]] ] ]; (* does not work when in parallel kernels mode*)
 #]
     &,
-  RTFTab
+  RTFTab, DistributedContexts->All
 ];
 ,
   {RTFRepeats}]
 
 Export["out/" <>ToString[Last@$CommandLine] <> "_" <> ToString[$ProcessID] <> "chernNumberAtRTF.dat", RTFReport];
-Export["out/" <>ToString[Last@$CommandLine] <> "_" <> ToString[$ProcessID] <> "chernNumberAtRTFPlot.pdf",
-  ListPlot[RTFReport[[All,1;;2]]]];
+(*Export["out/" <>ToString[Last@$CommandLine] <> "_" <> ToString[$ProcessID] <> "chernNumberAtRTFPlot.pdf",
+  ListPlot[RTFReport[[All,1;;2]]]];*)
 
+protocolBar[];
 
 t2 = DateList[];
 protocolMaxMemoryUsed[];

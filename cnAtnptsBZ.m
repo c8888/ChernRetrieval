@@ -16,57 +16,64 @@ protocolAdd[ToString[t1] <> " Program started."];
 \[Delta]x = 0.1;
 \[Delta]y = 0.1;
 q = 2; (* Pi-flux *)
-xmin = -1;
-xmax = 1;
-ymin = -1;
-ymax = 1;
-RTF = 1;
+xmin = -5;
+xmax = 5;
+ymin = -5;
+ymax = 5;
+RTF = 3;
 rangeNeighbour = 0.6;
 a = 1;
 \[Sigma]w = 0.2;
 k0 = {1, 2}; (* there is need to guess it from experimental data. One can use only the support too*)
 J = 1;
 J1 = 2;
-nIterations = 10;
-nRepeats = 1;
-nHIO = 20;
-gamma = 0.9;
-(*npts = 5;(*points in the 1st Brillouin zone*)*)
-(**************************************************************)
-nptsmin = 2; (* integer values *)
-nptsmax = 5;
-nptsRepeat = 3;
-
-protocolAdd["Parameters: "];
-protocolAdd["\[Delta]x = 0.1;
-\[Delta]y = 0.1;
-q = 2; (* Pi-flux *)
-xmin = -8;
-xmax = 8;
-ymin = -8;
-ymax = 8;
-RTF = 6;
-rangeNeighbour = 0.6;
-a = 1;
-\[Sigma]w = 0.2;
-k0 = {1, 2}; (* there is need to guess it from experimental data. One can use only the support too*)
-J = 1;
-J1 = 2;
-nIterations = 500;
+nIterations = 100;
 nRepeats = 3;
 nHIO = 20;
 gamma = 0.9;
 (*npts = 5;(*points in the 1st Brillouin zone*)*)
 (**************************************************************)
 nptsmin = 2; (* integer values *)
-nptsmax = 10;
-nptsRepeat = 5;"];
+nptsmax = 6;
+nptsRepeat = 3;
+
+(**************************************************************)
+protocolAdd[" "];
+protocolAdd["Parameters: "];
+protocolAdd["\[Delta]x = "<> ToString[\[Delta]x] ];
+protocolAdd["\[Delta]y = "<> ToString[\[Delta]y] ];
+protocolAdd["q = "<> ToString[q] ];
+protocolAdd["xmin = "<> ToString[xmin] ];
+protocolAdd["xmax = "<> ToString[xmax] ];
+protocolAdd["ymin = "<> ToString[ymin] ];
+protocolAdd["ymax = "<> ToString[ymax] ];
+protocolAdd["RTF = "<> ToString[RTF] ];
+protocolAdd["rangeNeighbour = "<> ToString[rangeNeighbour] ];
+protocolAdd["a = "<> ToString[a] ];
+protocolAdd["\[Sigma]w = "<> ToString[\[Sigma]w ] ];
+protocolAdd["k0 = "<> ToString[k0] ];
+protocolAdd["J = "<> ToString[J] ];
+protocolAdd["J1 = "<> ToString[J1] ];
+protocolAdd["nIterations = "<> ToString[nIterations] ];
+protocolAdd["nRepeats = "<> ToString[nRepeats] ];
+protocolAdd["nHIO = "<> ToString[nHIO] ];
+protocolAdd["gamma = "<> ToString[gamma] ];
+protocolAdd["npts = "<> ToString[npts] ];
+protocolBar[];
+
+(***************************************************)
+protocolAdd["nptsmin = "<> ToString[nptsmin] ];
+protocolAdd["nptsmax = "<> ToString[nptsmax] ];
+protocolAdd["nptsRepeat = "<> ToString[nptsRepeat]];
+protocolBar[];
+(***************************************************)
 
 protocolAdd["Results: "];
 
 protocolAdd[ "npts" <> " " <> "Chern_number_retr." <> " " <> "Mean overlap" <> " " <> " Standard deviation of overlap"];
 
 nptsTab = Table[n,{n, nptsmin, nptsmax}]; (* this table will be probed*)
+SetSharedVariable[nptsReport];
 nptsReport = {};
 
 lat = latticeProbingPoints[xmin, xmax, ymin,
@@ -101,15 +108,17 @@ Do[ParallelMap[Module[{
       <> " " <> ToString[StandardDeviation@Flatten@ckRetrBZ[[All, All, 2]] ] ];
   #]
     &,
-  nptsTab
+  nptsTab, DistributedContexts->All
+
 ];
 ,
   {nptsRepeat}];
 
 Export["out/" <>ToString[Last@$CommandLine] <> "_" <> ToString[$ProcessID] <> "chernNumberAtnpts.dat", nptsReport];
-Export["out/" <>ToString[Last@$CommandLine] <> "_" <> ToString[$ProcessID] <> "chernNumberAtnptsPlot.pdf",
-  ListPlot[nptsReport[[All,1;;2]]]];
+(*Export["out/" <>ToString[Last@$CommandLine] <> "_" <> ToString[$ProcessID] <> "chernNumberAtnptsPlot.pdf",
+  ListPlot[nptsReport[[All,1;;2]]]];*)
 
+protocolBar[];
 
 t2 = DateList[];
 protocolMaxMemoryUsed[];

@@ -33,6 +33,30 @@ nHIO = 20;
 gamma = 0.9;
 npts = 4;(*points in the 1st Brillouin zone*)
 (**************************************************************)
+protocolBar[];
+protocolAdd["Parameters: "];
+protocolAdd["\[Delta]x = "<> ToString[\[Delta]x] ];
+protocolAdd["\[Delta]y = "<> ToString[\[Delta]y] ];
+protocolAdd["q = "<> ToString[q] ];
+protocolAdd["xmin = "<> ToString[xmin] ];
+protocolAdd["xmax = "<> ToString[xmax] ];
+protocolAdd["ymin = "<> ToString[ymin] ];
+protocolAdd["ymax = "<> ToString[ymax] ];
+protocolAdd["RTF = "<> ToString[RTF] ];
+protocolAdd["rangeNeighbour = "<> ToString[rangeNeighbour] ];
+protocolAdd["a = "<> ToString[a] ];
+protocolAdd["\[Sigma]w = "<> ToString[\[Sigma]w ] ];
+protocolAdd["k0 = "<> ToString[k0] ];
+protocolAdd["J = "<> ToString[J] ];
+protocolAdd["J1 = "<> ToString[J1] ];
+protocolAdd["nIterations = "<> ToString[nIterations] ];
+protocolAdd["nRepeats = "<> ToString[nRepeats] ];
+protocolAdd["nHIO = "<> ToString[nHIO] ];
+protocolAdd["gamma = "<> ToString[gamma] ];
+protocolAdd["npts = "<> ToString[npts] ];
+protocolBar[];
+
+(**************************************************************)
 
 lat = latticeProbingPoints[xmin, xmax, ymin,
   ymax, \[Delta]x, \[Delta]y];

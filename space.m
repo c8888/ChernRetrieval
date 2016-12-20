@@ -73,7 +73,7 @@ rectLatticeSites[a_, RTF_, xmin_, xmax_, ymin_, ymax_]:=
       ]
 
 
-rectLatticeSitesPos[latticeProbingPoints_, a_, \[Delta]x_, \[Delta]y_, RTF_] := Module[{
+rectLatticeSitesPos[latticeProbingPoints_, a_, \[Delta]x_, \[Delta]y_, RTF_] := Module[{ (*TODO: RTF cannot be an odd multiple of 0.5a. Otherwise the algorithm crashes. *)
   ret0 = {},
   ret = {},
   istart = 0,
@@ -81,19 +81,19 @@ rectLatticeSitesPos[latticeProbingPoints_, a_, \[Delta]x_, \[Delta]y_, RTF_] := 
   jNeigh = {}
 },
   For[i=1, i<=Length[latticeProbingPoints], i++, (*select a row closest to one of the nodes *)
-    If[Abs[Abs@latticeProbingPoints[[i,1,1]] - Abs@Round[latticeProbingPoints[[i,1,1]]/ a]] <= \[Delta]x/2,
+    If[Abs[Abs@latticeProbingPoints[[i,1,1]] - Abs@Round[latticeProbingPoints[[i,1,1]]/ a] ] <= \[Delta]x/2,
     istart=i; Break[];
     ]
   ];
   (*find nearest points of the nodes in the row*)
   For[i=istart, i<=Length[latticeProbingPoints], i++,
-    If[Abs[Abs@latticeProbingPoints[[i,1,1]] - Abs@Round[latticeProbingPoints[[i,1,1]]/ a]] <= \[Delta]x/2,
+    If[Abs[Abs@latticeProbingPoints[[i,1,1]] - Abs@Round[latticeProbingPoints[[i,1,1]]/ a] ] <= \[Delta]x/2,
       AppendTo[iNeigh, i];
     ]
   ];
   (*find neareast points of the nodes in the column*)
   For[j=1, j<=Dimensions[latticeProbingPoints][[2]], j++,
-    If[Abs[Abs@latticeProbingPoints[[istart, j, 2]] - Abs@Round[latticeProbingPoints[[istart, j, 2]]/a]] <= \[Delta]y/2,
+    If[Abs[Abs@latticeProbingPoints[[istart, j, 2]] - Abs@Round[latticeProbingPoints[[istart, j, 2]]/a] ] <= \[Delta]y/2,
       AppendTo[jNeigh, j];
     ]
   ];
