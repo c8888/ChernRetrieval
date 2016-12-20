@@ -13,8 +13,8 @@ Needs["chernCalc`"];
 t1 = DateList[];
 protocolAdd[ToString[t1] <> " Program started."];
 (**************************************************************)
-\[Delta]x = 0.2;
-\[Delta]y = 0.2;
+\[Delta]x = 0.1;
+\[Delta]y = 0.1;
 q = 2; (* Pi-flux *)
 (*xmin = -8;
 xmax = 8;
@@ -45,8 +45,8 @@ xmax[RTF_] := RTF+margin[RTF]
 ymax[RTF_] := RTF+margin[RTF]
 
 protocolAdd["Parameters: "];
-protocolAdd["\[Delta]x = 0.2;
-\[Delta]y = 0.2;
+protocolAdd["\[Delta]x = 0.1;
+\[Delta]y = 0.1;
 q = 2; (* Pi-flux *)
 (*xmin = -8;
 xmax = 8;
