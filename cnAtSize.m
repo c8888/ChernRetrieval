@@ -27,16 +27,16 @@ a = 1;
 k0 = {1, 2}; (* there is need to guess it from experimental data. One can use only the support too*)
 J = 1;
 J1 = 2;
-nIterations = 1;
-nRepeats = 1;
+nIterations = 500;
+nRepeats = 3;
 nHIO = 20;
 gamma = 0.9;
 npts = 5;(*points in the 1st Brillouin zone*)
 (**************************************************************)
 RTFmin = 2.01; (*min and max must not be integers! TODO verify the bug*)
-RTFmax = 3.01;
+RTFmax = 10.01;
 deltaRTF = 0.5;
-RTFRepeats = 2;
+RTFRepeats = 5;
 
 margin[RTF_] := 0.3 RTF
 xmin[RTF_] := -RTF-margin[RTF]
@@ -59,14 +59,14 @@ a = 1;
 k0 = {1, 2}; (* there is need to guess it from experimental data. One can use only the support too*)
 J = 1;
 J1 = 2;
-nIterations = 1;
-nRepeats = 1;
+nIterations = 500;
+nRepeats = 3;
 nHIO = 20;
 gamma = 0.9;
 npts = 5;(*points in the 1st Brillouin zone*)
 (**************************************************************)
 RTFmin = 2.01; (*min and max must not be integers! TODO verify the bug*)
-RTFmax = 3.01;
+RTFmax = 10.01;
 deltaRTF = 0.5;
 RTFRepeats = 5;
 
