@@ -13,8 +13,8 @@ Needs["chernCalc`"];
 t1 = DateList[];
 protocolAdd[ToString[t1] <> " Program started."];
 (**************************************************************)
-\[Delta]x = 0.1;
-\[Delta]y = 0.1;
+\[Delta]x = 0.3;
+\[Delta]y = 0.3;
 q = 2; (* Pi-flux *)
 (*xmin = -8;
 xmax = 8;
@@ -27,16 +27,16 @@ a = 1;
 k0 = {1, 2}; (* there is need to guess it from experimental data. One can use only the support too*)
 J = 1;
 J1 = 2;
-nIterations = 500;
+nIterations = 1;
 nRepeats = 3;
 nHIO = 20;
 gamma = 0.9;
 npts = 5;(*points in the 1st Brillouin zone*)
 (**************************************************************)
 RTFmin = 2.01; (*min and max must not be integers! TODO verify the bug*)
-RTFmax = 10.01;
-deltaRTF = 0.5;
-RTFRepeats = 5;
+RTFmax = 5.01;
+deltaRTF = 1;
+RTFRepeats = 2;
 
 margin[RTF_] := 0.3 RTF
 xmin[RTF_] := -RTF-margin[RTF]

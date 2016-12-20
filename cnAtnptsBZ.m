@@ -16,26 +16,26 @@ protocolAdd[ToString[t1] <> " Program started."];
 \[Delta]x = 0.1;
 \[Delta]y = 0.1;
 q = 2; (* Pi-flux *)
-xmin = -8;
-xmax = 8;
-ymin = -8;
-ymax = 8;
-RTF = 6;
+xmin = -1;
+xmax = 1;
+ymin = -1;
+ymax = 1;
+RTF = 1;
 rangeNeighbour = 0.6;
 a = 1;
 \[Sigma]w = 0.2;
 k0 = {1, 2}; (* there is need to guess it from experimental data. One can use only the support too*)
 J = 1;
 J1 = 2;
-nIterations = 500;
-nRepeats = 3;
+nIterations = 10;
+nRepeats = 1;
 nHIO = 20;
 gamma = 0.9;
 (*npts = 5;(*points in the 1st Brillouin zone*)*)
 (**************************************************************)
 nptsmin = 2; (* integer values *)
-nptsmax = 10;
-nptsRepeat = 5;
+nptsmax = 5;
+nptsRepeat = 3;
 
 protocolAdd["Parameters: "];
 protocolAdd["\[Delta]x = 0.1;
