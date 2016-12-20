@@ -15,8 +15,6 @@
 BeginPackage["protocoling`"]
 (* Exported symbols added here with SymbolName::usage *)
 
-protocolSet::usage =
-    "protocolSet[folder] creates a new protocol file folder/processID.dat and returns the protocol name object"
 protocolAdd::usage =
     "protocolAdd[stringMessage] adds stringMessage at the end of protocol file"
 protocolMaxMemoryUsed::usage =
@@ -24,6 +22,8 @@ protocolMaxMemoryUsed::usage =
 
 Begin["`Private`"]
 
+protocolAdd[stringMessage_]:=PutAppend[stringMessage, "out/" <> ToString[Last@$CommandLine] <> "_"  <> ToString[$ProcessID] <> "protocol.txt"]
+protocolMaxMemoryUsed[]:=protocolAdd["Max memory used (GB): " <> ToString[MaxMemoryUsed[]/1024.^3]]
 
 End[] (* `Private` *)
 

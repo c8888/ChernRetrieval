@@ -40,6 +40,9 @@ honeycombLatticeBrillouinZonePoints[a, \[Delta]x, \[Delta]y]::usage =
 mirror2DSpace::usage =
     "mirror2DSpace[FT0] mirrors the 2Dtable with respect to x and y axes"
 
+mirrorXY::usage =
+    "mirrors 2D table with respect to y=x line"
+
 Begin["`Private`"]
 
 
@@ -161,6 +164,7 @@ mirror2DSpace[FT0_] :=
       ]
     ]
 
+mirrorXY[lat_]:= Reverse[Conjugate[Reverse[lat]], 2]
 
 End[] (* `Private` *)
 

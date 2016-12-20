@@ -29,7 +29,7 @@ phaseRetrieveGuess::usage =
 Begin["`Private`"]
 
 
-phaseRetrieveSupport[FTXAbs_, wavefAbs_, support_, nIterations_, nRepeats_, nHIO_, gamma_]:= (* returns table of a retrieved object *)
+phaseRetrieveGuess[FTXAbs_, wavefAbs_, support_, nIterations_, nRepeats_, nHIO_, gamma_]:= (* returns table of a retrieved object *)
     Module[ {
       nCol,
       nRow,
@@ -64,7 +64,45 @@ phaseRetrieveSupport[FTXAbs_, wavefAbs_, support_, nIterations_, nRepeats_, nHIO
         If[xierror<=retrerror, retr=xi; retrerror=xierror;, Null;, retr=xi]; (* error estimator *)
       (* backup mod *) (*Export["retrieved_insite_nRepeat="<>ToString[k]<>"_nIterations="<>ToString[nIterations]<>"_RTF="<>ToString[RTF]<>"_sigma_n="<>ToString[\[Sigma]n]<>".dat", xi];*)
       ];
-      Return[retr]; (* returned value *)
+      Return[retr*support]; (* returned value *)
+
+    ]
+phaseRetrieveSupport[FTXAbs_, support_, nIterations_, nRepeats_, nHIO_, gamma_]:= (* returns table of a retrieved object *)
+    Module[ {
+      nCol,
+      nRow,
+      xi={},
+      xiprim={},
+      xierror,
+      retrerror,
+      retr={},
+      FTxi={},
+      FTxi2={}
+    },
+      {nCol, nRow} = Dimensions[FTXAbs];
+      xi=Table[RandomComplex[], nCol, nRow]; (* random initialization, different complex numbers at each repetition *)
+
+
+      For[k = 0, k < nRepeats, k++,
+        For[i = 0, i < nIterations, i++,
+        (*protocolAdd[{"Repeat, Iteration: ", {k,i}}];*)
+          xiprim = xi;
+          FTxi = Fourier[xi];
+          FTxi2 = FTXAbs*Exp[I*Arg[FTxi]];
+          xi = InverseFourier[FTxi2];
+          If[Unequal[Mod[i,nHIO],0],
+          (* HIO case *) xi=Table[If[support[[q,w]] == 1,
+          (* inside support*) xi[[q,w]],
+          (* outside support *) xiprim[[q,w]]-gamma*xi[[q,w]] ],{q,nCol},{w,nRow}];  ,
+          (* ER case *)
+            xi*=support;]
+        ];
+        xierror=Total@Total@Abs[Abs[Fourier[xi]]^2-Abs[FTXAbs]^2];
+        If[k == 0, retrerror=xierror;];
+        If[xierror<=retrerror, retr=xi; retrerror=xierror;, Null;, retr=xi]; (* error estimator *)
+      (* backup mod *) (*Export["retrieved_insite_nRepeat="<>ToString[k]<>"_nIterations="<>ToString[nIterations]<>"_RTF="<>ToString[RTF]<>"_sigma_n="<>ToString[\[Sigma]n]<>".dat", xi];*)
+      ];
+      Return[retr*support]; (* returned value *)
 
     ]
 

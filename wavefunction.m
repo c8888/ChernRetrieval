@@ -39,6 +39,9 @@ ComplexDotProduct::usage =
 wannierBaseABproject::usage =
     "projects the wave function only on the two nodes A(0,0), B(0,1) in the centre"
 
+overlapWannier::usage =
+    "calculates overlap magnitude square when given wannier basis representation of wave functions"
+
 Begin["`Private`"]
 
 wannierNormalisationFactor[\[Sigma]w_, \[Delta]x_, \[Delta]y_, latticeProbingPoints_] := 1/Sqrt[
@@ -132,6 +135,8 @@ wannierBaseABproject[waveFunction_, latticeProbingPoints_, rectLatticeSites_, re
   ]&,
   {qApos, qBpos}] * \[Delta]x * \[Delta]y
 ]
+
+overlapWannier[ckModel_, ckRetr_]:= Abs[ComplexDotProduct[ckModel, ckRetr]]^2
 
 End[] (* `Private` *)
 
