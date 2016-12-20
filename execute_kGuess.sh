@@ -9,4 +9,4 @@
 #PBS -m abe
 
 cd $HOME/ChernRetrieval/
-math -script kGuess.m
+/usr/local/math10/Executables/math -script kGuess.m
