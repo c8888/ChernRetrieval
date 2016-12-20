@@ -34,7 +34,7 @@ gamma = 0.9;
 (*npts = 5;(*points in the 1st Brillouin zone*)*)
 (**************************************************************)
 nptsmin = 2; (* integer values *)
-nptsmax = 5;
+nptsmax = 6;
 nptsRepeat = 3;
 
 (**************************************************************)
@@ -73,6 +73,7 @@ protocolAdd["Results: "];
 protocolAdd[ "npts" <> " " <> "Chern_number_retr." <> " " <> "Mean overlap" <> " " <> " Standard deviation of overlap"];
 
 nptsTab = Table[n,{n, nptsmin, nptsmax}]; (* this table will be probed*)
+SetSharedVariable[nptsReport];
 nptsReport = {};
 
 lat = latticeProbingPoints[xmin, xmax, ymin,
@@ -107,7 +108,8 @@ Do[ParallelMap[Module[{
       <> " " <> ToString[StandardDeviation@Flatten@ckRetrBZ[[All, All, 2]] ] ];
   #]
     &,
-  nptsTab
+  nptsTab, DistributedContexts->All
+
 ];
 ,
   {nptsRepeat}];

@@ -24,7 +24,7 @@ xmin = -5;
 xmax = 5;
 ymin = -5;
 ymax = 5;
-RTF = 3;
+RTF = 3.6;
 rangeNeighbour = 0.6;
 a = 1;
 \[Sigma]w = 0.2;
@@ -32,13 +32,13 @@ k0 = {1, 2}; (* there is need to guess it from experimental data. One can use on
 J = 1;
 J1 = 2;
 nIterations = 100;
-nRepeats = 2;
+nRepeats = 3;
 nHIO = 20;
 gamma = 0.9;
 npts = 5;(*points in the 1st Brillouin zone*)
 (**************************************************************)
 kxmin = 0;
-kxmax = 2.Pi/a;
+kxmax = Pi/a;
 deltaKx = 0.3;
 kymin = 0;
 kymax = 2.Pi/a;
@@ -99,6 +99,8 @@ wavef = waveFunctionHarper[lat, a, J, J1, rec, RTF,
   k0, \[Sigma]w, \[Beta], \[Delta]x, \[Delta]y];
 FTwavefAbs = Abs@Fourier@wavef;
 
+SetSharedFunction[guess2];
+
 guess2[kGuess_] := Module[{
   wavefkGuess =
       waveFunctionHarper[lat, a, J, J1, rec, RTF,
@@ -116,10 +118,9 @@ guess2[kGuess_] := Module[{
 ]
 
 
-
 guess2T =
     ParallelTable[{kxGuess, kyGuess, guess2[{kxGuess, kyGuess}]}, {kxGuess, kxmin, kxmax, deltaKx}, {kyGuess, kymin, kymax, deltaKy},
-      DistributedContexts -> {"space`", "wavefunction`", "HIOER`"}];
+      DistributedContexts -> All];
 Export["out/" <>ToString[Last@$CommandLine] <> "_" <> ToString[$ProcessID] <> "kGuess.dat", Flatten[guess2T,1]];
 (*Export["out/" <>ToString[Last@$CommandLine] <> "_" <> ToString[$ProcessID] <> "kGuessPlot.pdf",
   ListPlot3D[Flatten[guess2T,1], AxesLabel -> {"kx", "ky", "error"}, ColorFunction->Hue]

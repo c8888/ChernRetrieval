@@ -42,10 +42,9 @@ phaseRetrieveGuess[FTXAbs_, wavefAbs_, support_, nIterations_, nRepeats_, nHIO_,
       FTxi2={}
       },
       {nCol, nRow} = Dimensions[FTXAbs];
-      xi=Table[RandomComplex[], nCol, nRow]; (* random initialization, different complex numbers at each repetition *)
 
-
-      For[k = 0, k < nRepeats, k++,
+      For[k = 1, k <= nRepeats, k++,
+        xi=Table[RandomComplex[], nCol, nRow]; (* random initialization, different complex numbers at each repetition *)
         For[i = 0, i < nIterations, i++,
           (*protocolAdd[{"Repeat, Iteration: ", {k,i}}];*)
           xiprim = xi;
@@ -80,10 +79,9 @@ phaseRetrieveSupport[FTXAbs_, support_, nIterations_, nRepeats_, nHIO_, gamma_]:
       FTxi2={}
     },
       {nCol, nRow} = Dimensions[FTXAbs];
-      xi=Table[RandomComplex[], nCol, nRow]; (* random initialization, different complex numbers at each repetition *)
 
-
-      For[k = 0, k < nRepeats, k++,
+      For[k = 1, k <= nRepeats, k++,
+        xi=Table[RandomComplex[], nCol, nRow]; (* random initialization, different complex numbers at each repetition *)
         For[i = 0, i < nIterations, i++,
         (*protocolAdd[{"Repeat, Iteration: ", {k,i}}];*)
           xiprim = xi;

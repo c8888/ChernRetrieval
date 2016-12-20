@@ -27,18 +27,18 @@ a = 1;
 k0 = {1, 2}; (* there is need to guess it from experimental data. One can use only the support too*)
 J = 1;
 J1 = 2;
-nIterations = 10;
+nIterations = 100;
 nRepeats = 3;
 nHIO = 20;
 gamma = 0.9;
 npts = 5;(*points in the 1st Brillouin zone*)
 (**************************************************************)
-RTFmin = 2.01; (*min and max must not be integers! TODO verify the bug*)
-RTFmax = 5.01;
-deltaRTF = 1;
-RTFRepeats = 2;
+RTFmin = 2; (*TODO: Bug. RTF must not be an odd multiple of 0.5a*)
+RTFmax = 6;
+deltaRTF = 1./3.;
+RTFRepeats = 1;
 
-margin[RTF_] := 0.3 RTF
+margin[RTF_] := 0.3*RTF
 xmin[RTF_] := -RTF-margin[RTF]
 ymin[RTF_] := -RTF-margin[RTF]
 xmax[RTF_] := RTF+margin[RTF]
@@ -80,6 +80,7 @@ protocolAdd["Results: "];
 protocolAdd[ "RTF" <> " " <> "Chern_number_retr." <> " " <> "Mean overlap" <> " " <> " Standard deviation of overlap"];
 
 RTFTab = Table[r,{r, RTFmin, RTFmax, deltaRTF}]; (* this table will be probed*)
+SetSharedVariable[RTFReport];
 RTFReport = {};
 
 BZ = latticeProbingPointsBZ[npts, a, q];
@@ -113,10 +114,10 @@ FxyTRetr = FxyT[ ckRetrBZ[[All, All, 1]] ];
 wRetr = 1/(2 \[Pi] I )*Chop@Total@Total[FxyTRetr];
 AppendTo[RTFReport, {#, Re@wRetr, Mean@Flatten@ckRetrBZ[[All, All, 2]], StandardDeviation@Flatten@ckRetrBZ[[All, All, 2]]}];
 protocolAdd[ ToString[#] <> " " <> ToString[Re@wRetr] <> " " <> ToString[Mean@Flatten@ckRetrBZ[[All, All, 2]] ]
-    <> " " <> ToString[StandardDeviation@Flatten@ckRetrBZ[[All, All, 2]] ] ];
+    <> " " <> ToString[StandardDeviation@Flatten@ckRetrBZ[[All, All, 2]] ] ]; (* does not work when in parallel kernels mode*)
 #]
     &,
-  RTFTab
+  RTFTab, DistributedContexts->All
 ];
 ,
   {RTFRepeats}]
