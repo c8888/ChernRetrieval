@@ -36,13 +36,43 @@ npts = 5;(*points in the 1st Brillouin zone*)
 RTFmin = 2.01; (*min and max must not be integers! TODO verify the bug*)
 RTFmax = 3.01;
 deltaRTF = 0.5;
-RTFRepeats = 5;
+RTFRepeats = 2;
 
 margin[RTF_] := 0.3 RTF
 xmin[RTF_] := -RTF-margin[RTF]
 ymin[RTF_] := -RTF-margin[RTF]
 xmax[RTF_] := RTF+margin[RTF]
 ymax[RTF_] := RTF+margin[RTF]
+
+protocolAdd["Parameters: "];
+protocolAdd["\[Delta]x = 0.2;
+\[Delta]y = 0.2;
+q = 2; (* Pi-flux *)
+(*xmin = -8;
+xmax = 8;
+ymin = -8;
+ymax = 8;
+RTF = 6;*)
+rangeNeighbour = 0.6;
+a = 1;
+\[Sigma]w = 0.2;
+k0 = {1, 2}; (* there is need to guess it from experimental data. One can use only the support too*)
+J = 1;
+J1 = 2;
+nIterations = 1;
+nRepeats = 1;
+nHIO = 20;
+gamma = 0.9;
+npts = 5;(*points in the 1st Brillouin zone*)
+(**************************************************************)
+RTFmin = 2.01; (*min and max must not be integers! TODO verify the bug*)
+RTFmax = 3.01;
+deltaRTF = 0.5;
+RTFRepeats = 5;
+
+margin[RTF_] := 0.3 RTF"];
+
+protocolAdd["Results: "];
 
 protocolAdd[ "RTF" <> " " <> "Chern_number_retr." <> " " <> "Mean overlap" <> " " <> " Standard deviation of overlap"];
 

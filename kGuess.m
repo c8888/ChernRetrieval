@@ -38,6 +38,31 @@ gamma = 0.9;
 npts = 4;(*points in the 1st Brillouin zone*)
 (**************************************************************)
 
+protocolAdd["Parameters: "];
+protocolAdd["\[Delta]x = 0.1;
+\[Delta]y = 0.1;
+q = 2; (* Pi-flux *)
+xmin = -8;
+xmax = 8;
+ymin = -8;
+ymax = 8;
+RTF = 6;
+rangeNeighbour = 0.6;
+a = 1;
+\[Sigma]w = 0.2;
+k0 = {1, 2}; (* there is need to guess it from experimental data. One can use only the support too*)
+J = 1;
+J1 = 2;
+nIterations = 500;
+nRepeats = 3;
+nHIO = 20;
+gamma = 0.9;
+npts = 4;(*points in the 1st Brillouin zone*)"
+];
+
+protocolAdd["Results: "];
+
+
 lat = latticeProbingPoints[xmin, xmax, ymin,
   ymax, \[Delta]x, \[Delta]y];
 rec = rectLatticeSites[a, RTF, xmin, xmax, ymin, ymax];
@@ -64,27 +89,26 @@ guess2[kGuess_] := Module[{
 },
   wavefkGuess =
       phaseRetrieveGuess[FTwavefAbs, Abs@wavefkGuess, support, nIterations,
-        nRepeats, nHIO, gamma]; (*nie ma nic wspolnego z wavefkGuess,
-  jest to obiekt odzyskany w tej samej pamieci*)
+        nRepeats, nHIO, gamma]; (*use the same memory*)
 
   Total@Total@Abs[Abs[Fourier[wavefkGuess]]^2 - Abs[FTwavefAbs]^2]/
-      Total[Total[Abs[FTwavefAbs]^2]] (*metryka bledu*)
+      Total[Total[Abs[FTwavefAbs]^2]] (*error metrics*)
 ]
 
-kxmin = -2Pi/a;
-kxmax = 2Pi/a;
-deltaKx = 0.6;
-kymin = -2Pi/a;
-kymax = 2Pi/a;
-deltaKy = 0.6;
+kxmin = 0;
+kxmax = 2.Pi/a;
+deltaKx = 0.3;
+kymin = 0;
+kymax = 2.Pi/a;
+deltaKy = 0.3;
 
 guess2T =
-    ParallelTable[{kxGuess, kyGuess, guess2[{kxGuess, kyGuess}]}, {kxGuess, kxmin, kxmax, deltakx}, {kyGuess, kymin, kymax, deltaky},
+    ParallelTable[{kxGuess, kyGuess, guess2[{kxGuess, kyGuess}]}, {kxGuess, kxmin, kxmax, deltaKx}, {kyGuess, kymin, kymax, deltaKy},
       DistributedContexts -> {"space`", "wavefunction`", "HIOER`"}];
-Export["out/" <>ToString[Last@$CommandLine] <> "_" <> ToString[$ProcessID] <> "kGuess.pdf",
-  ListPlot3D[Flatten[guess2T,1],
-  AxesLabel -> {"kx", "ky", "1-error" } ]
-]
+Export["out/" <>ToString[Last@$CommandLine] <> "_" <> ToString[$ProcessID] <> "kGuess.dat", Flatten[guess2T,1]];
+Export["out/" <>ToString[Last@$CommandLine] <> "_" <> ToString[$ProcessID] <> "kGuessPlot.pdf",
+  ListPlot3D[Flatten[guess2T,1], AxesLabel -> {"kx", "ky", "error"}, ColorFunction->Hue]
+];
 
 t2 = DateList[];
 protocolMaxMemoryUsed[];
