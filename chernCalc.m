@@ -47,7 +47,7 @@ findCkRetr[k_, J_, J1_, lat_, a_, rec_, RTF_, support_,nIterations_,nRepeats_,nH
     neighpos, \[Sigma]w, \[Beta], \[Delta]x, \[Delta]y, RTF];
 
   FTwavefAbs = Abs@Fourier@wavef;
-  wavef = phaseRetrieveSupport[FTwavefAbs, support,
+  wavef = phaseRetrieveGuess[FTwavefAbs, Abs@wavef, support,
     nIterations, nRepeats, nHIO, gamma]; (*not to waste the memory*)
 
   ckRetr = wannierBaseRectProject[wavef, lat, rec, pos,
@@ -58,7 +58,7 @@ findCkRetr[k_, J_, J1_, lat_, a_, rec_, RTF_, support_,nIterations_,nRepeats_,nH
 
   overlapRetr = overlapWannier[ckModel, ckRetr];
   overlapRetrMirror = overlapWannier[ckModel, ckRetrMirror];
-If[overlapRetr >= overlapRetrMirror,
+  If[overlapRetr >= overlapRetrMirror,
   Return[{ckRetr, overlapRetr}],
   Return[{ckRetrMirror, overlapRetrMirror}]
 ];
