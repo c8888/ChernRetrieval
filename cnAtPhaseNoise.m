@@ -80,8 +80,8 @@ support = Map[If[Norm[#] < RTF, 1, 0] &, lat, {2}];
 (**************************************************************)
 LaunchKernels[16];
 
-wavefBZ = Map[waveFunctionHarper[lat, a, J, J1, rec, RTF,
-  #, \[Sigma]w, \[Beta], \[Delta]x, \[Delta]y]&, BZ, {2}];
+wavefBZ = ParallelMap[waveFunctionHarper[lat, a, J, J1, rec, RTF,
+  #, \[Sigma]w, \[Beta], \[Delta]x, \[Delta]y]&, BZ, {2}, DistributedContexts->All];
 \[Sigma]PhNoiseTab = Table[\[Sigma]PhNoiseMin*\[Sigma]PhNoiseMult^i, {i, 0, Round@Log[\[Sigma]PhNoiseMax/\[Sigma]PhNoiseMin]/Log[\[Sigma]PhNoiseMult]}]
 
 CkModelNoisedBZ[\[Sigma]PhNoise_] :=
