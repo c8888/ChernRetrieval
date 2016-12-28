@@ -88,7 +88,7 @@ CkModelNoisedBZ[\[Sigma]PhNoise_] :=
       Map[wannierBaseRectProject[Abs@# * Map[Exp[I RandomVariate[NormalDistribution[Arg[#], \[Sigma]PhNoise]]]&, #, {2} ], lat, rec, pos,
         neighpos, \[Sigma]w, \[Beta], \[Delta]x, \[Delta]y, RTF]&, wavefBZ, {2}]
 
-cnAtPhaseNoiseTab = Transpose[{\[Sigma]PhNoiseTab, ParallelMap[1/(2 \[Pi] I )*Chop@Total@Total[FxyT[ CkModelNoisedBZ[#] ]]&, \[Sigma]PhNoiseTab, DistributedContexts->All]}];
+cnAtPhaseNoiseTab = Transpose[{\[Sigma]PhNoiseTab, Re@ParallelMap[1/(2 \[Pi] I )*Chop@Total@Total[FxyT[ CkModelNoisedBZ[#] ]]&, \[Sigma]PhNoiseTab, DistributedContexts->All]}];
 
 protocolAdd[ "\[Sigma]PhaseNoise" <> " " <> "Chern number" ];
 
