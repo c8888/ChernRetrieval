@@ -66,10 +66,8 @@ myES[hamiltonian_] :=
 blochSphereAnglesHarper[k_, J_, J1_] := Module[{
   h = {-J - J1 Cos[2 k[[1]] ], J1 Sin[2 k[[1]] ], -2 J Cos[ k[[2]] ] }
 },
-  {
-    N@ArcCos[ h[[3]] / Norm[h] ], (*theta*)
-    N@ArcTan[ h[[1]], h[[2]] ] (*phi*)
-  }
+  N@CoordinateTransformData[
+    "Cartesian" -> "Spherical", "Mapping", h][[2;;3]]
 ]
 
 

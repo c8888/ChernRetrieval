@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[   1874853,      34372]
-NotebookOptionsPosition[   1866268,      34101]
-NotebookOutlinePosition[   1867192,      34132]
-CellTagsIndexPosition[   1867005,      34125]
+NotebookDataLength[   1878178,      34482]
+NotebookOptionsPosition[   1869231,      34199]
+NotebookOutlinePosition[   1870153,      34230]
+CellTagsIndexPosition[   1869966,      34223]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -34097,12 +34097,110 @@ Cell[BoxData[
   Out[188]]], "Output",
  CellChangeTimes->{
   3.691409749669982*^9, {3.691409785665415*^9, 3.691409792594121*^9}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"h", "=", 
+  RowBox[{"{", 
+   RowBox[{"x", ",", "y", ",", "z"}], "}"}]}]], "Input",
+ CellChangeTimes->{{3.692383609733089*^9, 3.692383656019771*^9}, {
+  3.6923839060775642`*^9, 3.692383919198558*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"x", ",", "y", ",", "z"}], "}"}]], "Output",
+ CellChangeTimes->{{3.692383616988888*^9, 3.6923836565605097`*^9}, 
+   3.69238386656371*^9, {3.692383906672091*^9, 3.6923839197983932`*^9}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"i", "=", 
+  RowBox[{"N", "@", 
+   RowBox[{
+    RowBox[{"CoordinateTransformData", "[", 
+     RowBox[{
+      RowBox[{"\"\<Cartesian\>\"", "\[Rule]", "\"\<Spherical\>\""}], ",", 
+      "\"\<Mapping\>\"", ",", "h"}], "]"}], "[", 
+    RowBox[{"[", 
+     RowBox[{"2", ";;", "3"}], "]"}], "]"}]}]}]], "Input",
+ CellChangeTimes->{{3.69238361881588*^9, 3.692383623204982*^9}, {
+  3.692383663998105*^9, 3.692383666708091*^9}, {3.692383890574685*^9, 
+  3.6923838955221443`*^9}, {3.6923839392624273`*^9, 3.692383955223329*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"ArcTan", "[", 
+    RowBox[{"z", ",", 
+     SqrtBox[
+      RowBox[{
+       SuperscriptBox["x", "2"], "+", 
+       SuperscriptBox["y", "2"]}]]}], "]"}], ",", 
+   RowBox[{"ArcTan", "[", 
+    RowBox[{"x", ",", "y"}], "]"}]}], "}"}]], "Output",
+ CellChangeTimes->{{3.6923836249502068`*^9, 3.69238366724924*^9}, {
+  3.692383867541823*^9, 3.692383956409247*^9}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{"ArcCos", "[", 
+     RowBox[{
+      RowBox[{"h", "[", 
+       RowBox[{"[", "3", "]"}], "]"}], "/", 
+      RowBox[{"Norm", "[", "h", "]"}]}], "]"}], ",", 
+    RowBox[{"(*", "theta", "*)"}], 
+    RowBox[{"ArcTan", "[", 
+     RowBox[{
+      RowBox[{"h", "[", 
+       RowBox[{"[", "1", "]"}], "]"}], ",", 
+      RowBox[{"h", "[", 
+       RowBox[{"[", "2", "]"}], "]"}]}], "]"}]}], " ", 
+   RowBox[{"(*", "phi", "*)"}], "}"}], "\[Equal]", "i"}]], "Input",
+ CellChangeTimes->{{3.6923838529743977`*^9, 3.692383899192686*^9}, {
+  3.692383958630835*^9, 3.692383965393065*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{"ArcCos", "[", 
+     FractionBox["z", 
+      SqrtBox[
+       RowBox[{
+        SuperscriptBox[
+         RowBox[{"Abs", "[", "x", "]"}], "2"], "+", 
+        SuperscriptBox[
+         RowBox[{"Abs", "[", "y", "]"}], "2"], "+", 
+        SuperscriptBox[
+         RowBox[{"Abs", "[", "z", "]"}], "2"]}]]], "]"}], ",", 
+    RowBox[{"ArcTan", "[", 
+     RowBox[{"x", ",", "y"}], "]"}]}], "}"}], "\[Equal]", 
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{"ArcTan", "[", 
+     RowBox[{"z", ",", 
+      SqrtBox[
+       RowBox[{
+        SuperscriptBox["x", "2"], "+", 
+        SuperscriptBox["y", "2"]}]]}], "]"}], ",", 
+    RowBox[{"ArcTan", "[", 
+     RowBox[{"x", ",", "y"}], "]"}]}], "}"}]}]], "Output",
+ CellChangeTimes->{{3.692383862277074*^9, 3.692383966498417*^9}}]
 }, Open  ]]
 },
 WindowSize->{960, 983},
-WindowMargins->{{Automatic, 154}, {-35, Automatic}},
+WindowMargins->{{Automatic, 154}, {0, Automatic}},
 WindowStatusArea->"Debug.nb last backed up to Debug.nb~ on Mon 2 Jan 2017 at \
-10:09:23 PM",
+11:06:56 PM",
 FrontEndVersion->"11.0 for Linux x86 (64-bit) (September 21, 2016)",
 StyleDefinitions->"Default.nb"
 ]
@@ -34124,9 +34222,9 @@ CellTagsIndex->{
 *)
 (*CellTagsIndex
 CellTagsIndex->{
- {"Info1033692383171-9638598", 1866669, 34113},
- {"Info1053692383172-9638598", 1866784, 34116},
- {"Info223689278633-5005130", 1866899, 34119}
+ {"Info1033692383171-9638598", 1869630, 34211},
+ {"Info1053692383172-9638598", 1869745, 34214},
+ {"Info223689278633-5005130", 1869860, 34217}
  }
 *)
 (*NotebookFileOutline
@@ -34373,6 +34471,18 @@ Cell[1855644, 33828, 354, 11, 34, "Output"]
 Cell[CellGroupData[{
 Cell[1856035, 33844, 358, 10, 34, "Input"],
 Cell[1856396, 33856, 9856, 242, 117, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[1866289, 34103, 223, 5, 34, "Input"],
+Cell[1866515, 34110, 224, 4, 34, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[1866776, 34119, 540, 12, 34, "Input"],
+Cell[1867319, 34133, 407, 12, 50, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[1867763, 34150, 631, 18, 34, "Input"],
+Cell[1868397, 34170, 818, 26, 66, "Output"]
 }, Open  ]]
 }
 ]
