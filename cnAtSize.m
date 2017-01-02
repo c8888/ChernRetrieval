@@ -24,9 +24,9 @@ RTF = 6;*)
 rangeNeighbour = 0.6;
 a = 1;
 \[Sigma]w = 0.2;
-k0 = {1, 2}; (* there is need to guess it from experimental data. One can use only the support too*)
-J = 1;
-J1 = 2;
+k0 = {0.1, 1.67}; (* there is need to guess it from experimental data. One can use only the support too*)
+J = 0.237;
+J1 = 0.125;
 (*nIterations = 100;
 nRepeats = 3;
 nHIO = 20;
@@ -35,7 +35,7 @@ npts = 8;(*points in the 1st Brillouin zone*)
 (**************************************************************)
 RTFmin = 2; (*TODO: Bug. RTF must not be an odd multiple of 0.5a*)
 RTFmax = 10;
-deltaRTF = 1./3.;
+deltaRTF = 1;
 RTFRepeats = 1;
 
 margin[RTF_] := 0.3*RTF
@@ -85,7 +85,7 @@ RTFReport = {};
 
 BZ = latticeProbingPointsBZ[npts, a, q];
 
-LaunchKernels[64];
+
 
 Map[Module[{},
 lat = latticeProbingPoints[xmin[#], xmax[#], ymin[#],
@@ -106,19 +106,17 @@ support = Function[rtf, Map[If[Norm[#] < rtf, 1, 0] &, lat, {2}]][#];
 
 
 ckModelBZ =
-    Module[{ret = Function[rtf,
-      ParallelMap[Activate, Flatten@Map[
-      Inactivate[findCkModel[#, J, J1, lat, a, rec, rtf, support, nIterations,
-        nRepeats, nHIO, gamma, pos,
-        neighpos, \[Sigma]w, \[Beta], \[Delta]x, \[Delta]y]] &, BZ, {2}], DistributedContexts->All]][#]},
-      ArrayReshape[
-        ret, {First@Dimensions[BZ], Dimensions[BZ][[2]],
-        Last@Dimensions[ret]}]];
+    Function[rtf,
+      ParallelMap[
+        findCkModel[#, J, J1, lat, a, rec, rtf, support, nIterations,
+          nRepeats, nHIO, gamma, pos,
+          neighpos, \[Sigma]w, \[Beta], \[Delta]x, \[Delta]y] &, BZ, {2}, DistributedContexts->All]
+    ][#];
 
 FxyTModel = FxyT[ ckModelBZ ];
 wModel = 1/(2 \[Pi] I )*Chop@Total@Total[FxyTModel];
 AppendTo[RTFReport, {#, Re@wModel}];
-protocolAdd[ ToString[#] <> " " <> ToString[Re@wModel]  ];
+protocolAdd[ ToString[#] <> " " <> ToString[wModel]  ];
 #]
     &,
   RTFTab

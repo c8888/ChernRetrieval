@@ -2,9 +2,9 @@
 
 #PBS -N cn_Size
 
-#PBS -q mp64
+#PBS -q mp8
 
-#PBS -l cput=240:00:00
+#PBS -l cput=340:00:00
 
 #PBS -m abe
 
