@@ -27,14 +27,14 @@ a = 1;
 k0 = {1, 2}; (* there is need to guess it from experimental data. One can use only the support too*)
 J = 1;
 J1 = 2;
-nIterations = 100;
+(*nIterations = 100;
 nRepeats = 3;
 nHIO = 20;
-gamma = 0.9;
+gamma = 0.9;*)
 npts = 5;(*points in the 1st Brillouin zone*)
 (**************************************************************)
 RTFmin = 2; (*TODO: Bug. RTF must not be an odd multiple of 0.5a*)
-RTFmax = 6;
+RTFmax = 10;
 deltaRTF = 1./3.;
 RTFRepeats = 1;
 
@@ -77,7 +77,7 @@ protocolBar[];
 
 protocolAdd["Results: "];
 
-protocolAdd[ "RTF" <> " " <> "Chern_number_retr." <> " " <> "Mean overlap" <> " " <> " Standard deviation of overlap"];
+protocolAdd[ "RTF" <> " " <> "Chern_number_Model." ];
 
 RTFTab = Table[r,{r, RTFmin, RTFmax, deltaRTF}]; (* this table will be probed*)
 SetSharedVariable[RTFReport];
@@ -85,7 +85,9 @@ RTFReport = {};
 
 BZ = latticeProbingPointsBZ[npts, a, q];
 
-Do[ParallelMap[Module[{},
+LaunchKernels[16];
+
+Map[Module[{},
 lat = latticeProbingPoints[xmin[#], xmax[#], ymin[#],
   ymax[#], \[Delta]x, \[Delta]y];
 rec = rectLatticeSites[a, #, xmin[#], xmax[#], ymin[#], ymax[#]];
@@ -103,28 +105,25 @@ support = Function[rtf, Map[If[Norm[#] < rtf, 1, 0] &, lat, {2}]][#];
 (**************************************************************)
 
 
-ckRetrBZ =
+ckModelBZ =
     Function[rtf,
-      Map[
-      findCkRetr[#, J, J1, lat, a, rec, rtf, support, nIterations,
+      ParallelMap[
+      findCkModel[#, J, J1, lat, a, rec, rtf, support, nIterations,
         nRepeats, nHIO, gamma, pos,
-        neighpos, \[Sigma]w, \[Beta], \[Delta]x, \[Delta]y] &, BZ, {2}]
+        neighpos, \[Sigma]w, \[Beta], \[Delta]x, \[Delta]y] &, BZ, {2}, DistributedContexts->All]
     ][#];
-FxyTRetr = FxyT[ ckRetrBZ[[All, All, 1]] ];
-wRetr = 1/(2 \[Pi] I )*Chop@Total@Total[FxyTRetr];
-AppendTo[RTFReport, {#, Re@wRetr, Mean@Flatten@ckRetrBZ[[All, All, 2]], StandardDeviation@Flatten@ckRetrBZ[[All, All, 2]]}];
-protocolAdd[ ToString[#] <> " " <> ToString[Re@wRetr] <> " " <> ToString[Mean@Flatten@ckRetrBZ[[All, All, 2]] ]
-    <> " " <> ToString[StandardDeviation@Flatten@ckRetrBZ[[All, All, 2]] ] ]; (* does not work when in parallel kernels mode*)
+FxyTModel = FxyT[ ckModelBZ ];
+wModel = 1/(2 \[Pi] I )*Chop@Total@Total[FxyTModel];
+AppendTo[RTFReport, {#, Re@wModel}];
+protocolAdd[ ToString[#] <> " " <> ToString[Re@wModel]  ];
 #]
     &,
-  RTFTab, DistributedContexts->All
+  RTFTab
 ];
-,
-  {RTFRepeats}]
+
 
 Export["out/" <>ToString[Last@$CommandLine] <> "_" <> ToString[$ProcessID] <> "chernNumberAtRTF.dat", RTFReport];
-(*Export["out/" <>ToString[Last@$CommandLine] <> "_" <> ToString[$ProcessID] <> "chernNumberAtRTFPlot.pdf",
-  ListPlot[RTFReport[[All,1;;2]]]];*)
+
 
 protocolBar[];
 
