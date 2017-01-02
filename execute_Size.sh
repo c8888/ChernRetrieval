@@ -2,7 +2,7 @@
 
 #PBS -N cn_Size
 
-#PBS -q mp16
+#PBS -q mp64
 
 #PBS -l cput=240:00:00
 
