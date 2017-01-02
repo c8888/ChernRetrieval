@@ -31,7 +31,7 @@ J1 = 2;
 nRepeats = 3;
 nHIO = 20;
 gamma = 0.9;*)
-npts = 5;(*points in the 1st Brillouin zone*)
+npts = 8;(*points in the 1st Brillouin zone*)
 (**************************************************************)
 RTFmin = 2; (*TODO: Bug. RTF must not be an odd multiple of 0.5a*)
 RTFmax = 10;
@@ -85,7 +85,7 @@ RTFReport = {};
 
 BZ = latticeProbingPointsBZ[npts, a, q];
 
-LaunchKernels[16];
+LaunchKernels[64];
 
 Map[Module[{},
 lat = latticeProbingPoints[xmin[#], xmax[#], ymin[#],
