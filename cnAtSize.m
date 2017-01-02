@@ -106,12 +106,15 @@ support = Function[rtf, Map[If[Norm[#] < rtf, 1, 0] &, lat, {2}]][#];
 
 
 ckModelBZ =
-    Function[rtf,
-      ParallelMap[
-      findCkModel[#, J, J1, lat, a, rec, rtf, support, nIterations,
+    Module[{ret = Function[rtf,
+      ParallelMap[Activate, Flatten@Map[
+      Inactivate[findCkModel[#, J, J1, lat, a, rec, rtf, support, nIterations,
         nRepeats, nHIO, gamma, pos,
-        neighpos, \[Sigma]w, \[Beta], \[Delta]x, \[Delta]y] &, BZ, {2}, DistributedContexts->All]
-    ][#];
+        neighpos, \[Sigma]w, \[Beta], \[Delta]x, \[Delta]y]] &, BZ, {2}], DistributedContexts->All]][#]},
+      ArrayReshape[
+        ret, {First@Dimensions[BZ], Dimensions[BZ][[2]],
+        Last@Dimensions[ret]}]];
+
 FxyTModel = FxyT[ ckModelBZ ];
 wModel = 1/(2 \[Pi] I )*Chop@Total@Total[FxyTModel];
 AppendTo[RTFReport, {#, Re@wModel}];
