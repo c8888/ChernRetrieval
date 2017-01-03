@@ -54,7 +54,7 @@ latticeProbingPointsBZ[npts_, a_, q_]:= Module[{ (*we assume p=1 in p/q*2Pi flux
   dkx = 2 Pi/(q * a) /npts,
   dky = 2 Pi/a/npts
 },
-    N@Table[{kx, ky}, {kx, dkx, dkx*npts, dkx}, {ky, dky, dky*npts, dky}]
+    N@Table[{kx, ky}, {kx, 0, dkx*npts, dkx}, {ky, 0, dky*npts, dky}]
   ]
 
 rectLatticeSites[a_, RTF_, xmin_, xmax_, ymin_, ymax_]:=

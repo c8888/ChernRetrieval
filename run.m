@@ -16,11 +16,11 @@ protocolAdd[ToString[t1] <> " Program started."];
 \[Delta]x = 0.1;
 \[Delta]y = 0.1;
 q = 2; (* Pi-flux *)
-xmin = -8;
-xmax = 8;
-ymin = -8;
-ymax = 8;
-RTF = xmax/1.3;
+xmin = -6;
+xmax = 6;
+ymin = -6;
+ymax = 6;
+RTF = 6;
 rangeNeighbour = 0.6;
 a = 1;
 \[Sigma]w = 0.2;

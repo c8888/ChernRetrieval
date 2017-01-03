@@ -20,22 +20,22 @@ xmin = -5;
 xmax = 5;
 ymin = -5;
 ymax = 5;
-RTF = 3;
+RTF = 5;
 rangeNeighbour = 0.6;
 a = 1;
 \[Sigma]w = 0.2;
 k0 = {1, 2}; (* there is need to guess it from experimental data. One can use only the support too*)
 J = 1;
 J1 = 2;
-nIterations = 100;
+(*nIterations = 100;
 nRepeats = 3;
 nHIO = 20;
-gamma = 0.9;
+gamma = 0.9;*)
 (*npts = 5;(*points in the 1st Brillouin zone*)*)
 (**************************************************************)
 nptsmin = 2; (* integer values *)
-nptsmax = 6;
-nptsRepeat = 3;
+nptsmax = 15;
+nptsRepeat = 1;
 
 (**************************************************************)
 protocolAdd[" "];
@@ -85,7 +85,7 @@ neighpos =
       rangeNeighbour];
 support = Map[If[Norm[#] < RTF, 1, 0] &, lat, {2}];
 
-Do[ParallelMap[Module[{
+Map[Module[{
   BZ = latticeProbingPointsBZ[#, a, q]
 },
 
@@ -95,24 +95,21 @@ Do[ParallelMap[Module[{
 
   (**************************************************************)
 
-  ckRetrBZ =
-        Map[
-          findCkRetr[#, J, J1, lat, a, rec, RTF, support, nIterations,
-            nRepeats, nHIO, gamma, pos,
-            neighpos, \[Sigma]w, \[Beta], \[Delta]x, \[Delta]y] &, BZ, {2}];
-  FxyTRetr = FxyT[ ckRetrBZ[[All, All, 1]] ];
-  wRetr = 1/(2 \[Pi] I )*Chop@Total@Total[FxyTRetr];
+  ckModelBZ =
+      ParallelMap[
+        findCkModel[#, J, J1, lat, a, rec, RTF, support, nIterations,
+          nRepeats, nHIO, gamma, pos,
+          neighpos, \[Sigma]w, \[Beta], \[Delta]x, \[Delta]y] &, BZ, {2}, DistributedContexts->All];
+  FxyTModel = FxyT[ ckModelBZ ];
+  wModel = 1/(2 \[Pi] I )*Chop@Total@Total[FxyTModel];
 
-  AppendTo[nptsReport, {#, Re@wRetr, Mean@Flatten@ckRetrBZ[[All, All, 2]], StandardDeviation@Flatten@ckRetrBZ[[All, All, 2]]}];
-  protocolAdd[ ToString[#] <> " " <> ToString[Re@wRetr] <> " " <> ToString[Mean@Flatten@ckRetrBZ[[All, All, 2]] ]
-      <> " " <> ToString[StandardDeviation@Flatten@ckRetrBZ[[All, All, 2]] ] ];
+  AppendTo[nptsReport, {#, Re@wModel}];
+  protocolAdd[ ToString[#] <> " " <> ToString[wModel]  ];
   #]
     &,
-  nptsTab, DistributedContexts->All
-
+  nptsTab
 ];
-,
-  {nptsRepeat}];
+
 
 Export["out/" <>ToString[Last@$CommandLine] <> "_" <> ToString[$ProcessID] <> "chernNumberAtnpts.dat", nptsReport];
 (*Export["out/" <>ToString[Last@$CommandLine] <> "_" <> ToString[$ProcessID] <> "chernNumberAtnptsPlot.pdf",
