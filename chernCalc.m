@@ -21,6 +21,10 @@ Needs["protocoling`"];
 
 findCkRetr::usage =
     "findCkRetr[k_, J_, J1_, lat_, a_, rec_, RTF_, support_,nIterations_,nRepeats_,nHIO_,gamma_, pos_, neighpos_,\[Sigma]w_, \[Beta]_, \[Delta]x_, \[Delta]y_] automates the process of finding ckrets for different k"
+findCkRetrSupport::usage =
+    "findCkRetrSupport[k_, J_, J1_, lat_, a_, rec_, RTF_, support_,nIterations_,nRepeats_,nHIO_,gamma_, pos_, neighpos_,\[Sigma]w_, \[Beta]_, \[Delta]x_, \[Delta]y_] automates the process of finding ckrets for different k.
+    Uses HIO with support information only."
+
 findCkModel::usage =
     "findCkModel[k_, J_, J1_, lat_, a_, rec_, RTF_, support_,nIterations_,nRepeats_,nHIO_,gamma_, pos_, neighpos_,\[Sigma]w_, \[Beta]_, \[Delta]x_, \[Delta]y_] automates the process of finding ckrets for different k"
 link::usage =
@@ -64,6 +68,39 @@ findCkRetr[k_, J_, J1_, lat_, a_, rec_, RTF_, support_,nIterations_,nRepeats_,nH
 ];
   (* Selecting the right reflection of the image which is NECESSARY for the algorithm to calculate the Chern Number.
 In real experiment the imperfections will probably not allow for such degeneracy. Anyway it needs to be analyzed further.*)
+]
+
+
+findCkRetrSupport[k_, J_, J1_, lat_, a_, rec_, RTF_, support_,nIterations_,nRepeats_,nHIO_,gamma_, pos_, neighpos_,\[Sigma]w_, \[Beta]_, \[Delta]x_, \[Delta]y_] := Module[{
+  wavef =
+      waveFunctionHarper[lat, a, J, J1, rec, RTF,
+        k, \[Sigma]w, \[Beta], \[Delta]x, \[Delta]y],
+  FTwavefAbs = {},
+  ckRetr = {},
+  ckRetrMirror = {},
+  ckModel = {},
+  overlapRetr,
+  overlapRetrMirror
+},
+  ckModel = wannierBaseRectProject[wavef, lat, rec, pos,
+    neighpos, \[Sigma]w, \[Beta], \[Delta]x, \[Delta]y, RTF];
+
+  FTwavefAbs = Abs@Fourier@wavef;
+  wavef = phaseRetrieveSupport[FTwavefAbs, support,
+    nIterations, nRepeats, nHIO, gamma]; (*not to waste the memory*)
+
+  ckRetr = wannierBaseRectProject[wavef, lat, rec, pos,
+    neighpos, \[Sigma]w, \[Beta], \[Delta]x, \[Delta]y, RTF];
+
+  ckRetrMirror = wannierBaseRectProject[mirrorXY@wavef, lat, rec, pos,
+    neighpos, \[Sigma]w, \[Beta], \[Delta]x, \[Delta]y, RTF];
+
+  overlapRetr = overlapWannier[ckModel, ckRetr];
+  overlapRetrMirror = overlapWannier[ckModel, ckRetrMirror];
+  If[overlapRetr >= overlapRetrMirror,
+    Return[{ckRetr, overlapRetr}],
+    Return[{ckRetrMirror, overlapRetrMirror}]
+  ];
 ]
 
 findCkModel[k_, J_, J1_, lat_, a_, rec_, RTF_, support_, nIterations_,

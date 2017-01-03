@@ -43,25 +43,29 @@ phaseRetrieveGuess[FTXAbs_, wavefAbs_, support_, nIterations_, nRepeats_, nHIO_,
       },
       {nCol, nRow} = Dimensions[FTXAbs];
 
-      For[k = 1, k <= nRepeats, k++,
+      Do[
         xi=Table[RandomComplex[], nCol, nRow]; (* random initialization, different complex numbers at each repetition *)
-        For[i = 0, i < nIterations, i++,
+        Do[
           (*protocolAdd[{"Repeat, Iteration: ", {k,i}}];*)
           xiprim = xi;
           FTxi = Fourier[xi];
-          FTxi2 = FTXAbs*Exp[I*Arg[FTxi]];
-          xi = InverseFourier[FTxi2];
+          FTxi = FTXAbs*Exp[I*Arg[FTxi]];
+          xi = InverseFourier[FTxi];
           If[Unequal[Mod[i,nHIO],0],
           (* HIO case *) xi=Table[If[support[[q,w]] == 1,
           (* inside support*) wavefAbs[[q,w]]*Exp[I*Arg[xi[[q,w]]]],
           (* outside support *) xiprim[[q,w]]-gamma*xi[[q,w]] ],{q,nCol},{w,nRow}];  ,
           (* ER case *)
             xi=wavefAbs*Exp[I*Arg[xi]]];
+          ,
+          {i, nIterations}
         ];
         xierror=Total@Total@Abs[Abs[Fourier[xi]]^2-Abs[FTXAbs]^2];
-        If[k == 0, retrerror=xierror;];
-        If[xierror<=retrerror, retr=xi; retrerror=xierror;, Null;, retr=xi]; (* error estimator *)
+        If[k == 0, retrerror=xierror];
+        If[xierror<=retrerror, retr=xi; retrerror=xierror, Null, retr=xi]; (* error estimator *)
       (* backup mod *) (*Export["retrieved_insite_nRepeat="<>ToString[k]<>"_nIterations="<>ToString[nIterations]<>"_RTF="<>ToString[RTF]<>"_sigma_n="<>ToString[\[Sigma]n]<>".dat", xi];*)
+      ,
+        nRepeats
       ];
       Return[retr*support]; (* returned value *)
 
@@ -75,30 +79,33 @@ phaseRetrieveSupport[FTXAbs_, support_, nIterations_, nRepeats_, nHIO_, gamma_]:
       xierror,
       retrerror,
       retr={},
-      FTxi={},
-      FTxi2={}
+      FTxi={}
     },
       {nCol, nRow} = Dimensions[FTXAbs];
 
-      For[k = 1, k <= nRepeats, k++,
+      Do[
         xi=Table[RandomComplex[], nCol, nRow]; (* random initialization, different complex numbers at each repetition *)
-        For[i = 0, i < nIterations, i++,
+        Do[
         (*protocolAdd[{"Repeat, Iteration: ", {k,i}}];*)
           xiprim = xi;
           FTxi = Fourier[xi];
-          FTxi2 = FTXAbs*Exp[I*Arg[FTxi]];
-          xi = InverseFourier[FTxi2];
+          FTxi = FTXAbs*Exp[I*Arg[FTxi]];
+          xi = InverseFourier[FTxi];
           If[Unequal[Mod[i,nHIO],0],
           (* HIO case *) xi=Table[If[support[[q,w]] == 1,
           (* inside support*) xi[[q,w]],
-          (* outside support *) xiprim[[q,w]]-gamma*xi[[q,w]] ],{q,nCol},{w,nRow}];  ,
+          (* outside support *) xiprim[[q,w]]-gamma*xi[[q,w]] ],{q,nCol},{w,nRow}]  ,
           (* ER case *)
-            xi*=support;]
+            xi*=support];
+          ,
+          {i, nIterations}
         ];
         xierror=Total@Total@Abs[Abs[Fourier[xi]]^2-Abs[FTXAbs]^2];
         If[k == 0, retrerror=xierror;];
-        If[xierror<=retrerror, retr=xi; retrerror=xierror;, Null;, retr=xi]; (* error estimator *)
+        If[xierror<=retrerror, retr=xi; retrerror=xierror, Null, retr=xi]; (* error estimator *)
       (* backup mod *) (*Export["retrieved_insite_nRepeat="<>ToString[k]<>"_nIterations="<>ToString[nIterations]<>"_RTF="<>ToString[RTF]<>"_sigma_n="<>ToString[\[Sigma]n]<>".dat", xi];*)
+      ,
+        nRepeats
       ];
       Return[retr*support]; (* returned value *)
 

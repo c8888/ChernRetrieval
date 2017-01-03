@@ -87,62 +87,7 @@ protocolAdd[ "Repeat" <> " " <> "Iteration" <> " " <> "Chern number retr." <> " 
 SetSharedVariable[overlapIter];
 overlapIter = {};
 
-(*modded phase retrieve to go into the process *)
-phaseRetrieveSupportOverlap[FTXAbs_, support_, nIterations_, nRepeats_, nHIO_, gamma_, iterStep_]:= (* returns table of a retrieved object *)
-    Module[ {
-      nCol,
-      nRow,
-      xi={},
-      xiprim={},
-      xierror,
-      retrerror,
-      retr={},
-      FTxi={},
-      FTxi2={}
-    },
-      {nCol, nRow} = Dimensions[FTXAbs];
 
-
-
-      For[k = 1, k <= nRepeats, k++,
-        xi=Table[RandomComplex[], nCol, nRow]; (* random initialization, different complex numbers at each repetition *)
-        For[i = 0, i < nIterations, i++,
-        (*protocolAdd[{"Repeat, Iteration: ", {k,i}}];*)
-          xiprim = xi;
-          FTxi = Fourier[xi];
-          FTxi2 = FTXAbs*Exp[I*Arg[FTxi]];
-          xi = InverseFourier[FTxi2];
-          If[Unequal[Mod[i,nHIO],0],
-          (* HIO case *) xi=Table[If[support[[q,w]] == 1,
-          (* inside support*) xi[[q,w]],
-          (* outside support *) xiprim[[q,w]]-gamma*xi[[q,w]] ],{q,nCol},{w,nRow}];  ,
-          (* ER case *)
-            xi*=support;]
-          If[ Mod[i,iterStep] == 0,
-            ckRetrBZ =
-                Map[
-                  findCkRetr[#, J, J1, lat, a, rec, RTF, support, nIterations,
-                    nRepeats, nHIO, gamma, pos,
-                    neighpos, \[Sigma]w, \[Beta], \[Delta]x, \[Delta]y] &, BZ, {2}];
-            FxyTRetr = FxyT[ ckRetrBZ[[All, All, 1]] ];
-            wRetr = 1/(2 \[Pi] I )*Chop@Total@Total[FxyTRetr];
-            AppendTo[overlapIter, {k, i, Re@wRetr, Mean@Flatten@ckRetrBZ[[All, All, 2]], StandardDeviation@Flatten@ckRetrBZ[[All, All, 2]]}];
-
-            (*protocolAdd[ ToString[k] <> " " <> ToString[i] <> " " <> ToString[Re@wRetr] <> " " <> ToString[Mean@Flatten@ckRetrBZ[[All, All, 2]] ]
-                <> " " <> ToString[StandardDeviation@Flatten@ckRetrBZ[[All, All, 2]] ] ];*)
-
-          ];
-        ];
-        xierror=Total@Total@Abs[Abs[Fourier[xi]]^2-Abs[FTXAbs]^2];
-        If[k == 0, retrerror=xierror;];
-        If[xierror<=retrerror, retr=xi; retrerror=xierror;, Null;, retr=xi]; (* error estimator *)
-      (* backup mod *) (*Export["retrieved_insite_nRepeat="<>ToString[k]<>"_nIterations="<>ToString[nIterations]<>"_RTF="<>ToString[RTF]<>"_sigma_n="<>ToString[\[Sigma]n]<>".dat", xi];*)
-      ];
-      Return[retr*support]; (* returned value *)
-
-    ]
-
-ParallelMap[phaseRetrieveSupportOverlap[FTwavefAbs, support, nIterations, 1, nHIO, gamma, iterStep] &, Table[n,{n,nRepeats}], DistributedContexts->All];
 
 Export["out/" <>ToString[Last@$CommandLine] <> "_" <> ToString[$ProcessID] <> "chernNumberAtOverlap.dat", overlapIter];
 

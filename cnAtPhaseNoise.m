@@ -16,11 +16,11 @@ protocolAdd[ToString[t1] <> " Program started."];
 \[Delta]x = 0.1;
 \[Delta]y = 0.1;
 q = 2; (* Pi-flux *)
-xmin = -5;
-xmax = 5;
-ymin = -5;
-ymax = 5;
-RTF = 5;
+xmin = -2;
+xmax = 2;
+ymin = -2;
+ymax = 2;
+RTF = 2;
 rangeNeighbour = 0.6;
 a = 1;
 \[Sigma]w = 0.2;
@@ -31,7 +31,7 @@ nIterations = 500;
 nRepeats = 4;
 nHIO = 20;
 gamma = 0.9;
-npts = 5;(*points in the 1st Brillouin zone*)
+npts = 2;(*points in the 1st Brillouin zone*)
 (**************************************************************)
 \[Sigma]PhNoiseMin = 0.000001; (* every iterStep iterations the overlap and chern number are computed *)
 \[Sigma]PhNoiseMax = 16;
@@ -85,8 +85,8 @@ wavefBZ = ParallelMap[waveFunctionHarper[lat, a, J, J1, rec, RTF,
 \[Sigma]PhNoiseTab = Table[\[Sigma]PhNoiseMin*\[Sigma]PhNoiseMult^i, {i, 0, Round@Log[\[Sigma]PhNoiseMax/\[Sigma]PhNoiseMin]/Log[\[Sigma]PhNoiseMult]}]
 
 CkModelNoisedBZ[\[Sigma]PhNoise_] :=
-      ParallelMap[wannierBaseRectProject[Abs@# * Map[Exp[I RandomVariate[NormalDistribution[Arg[#], \[Sigma]PhNoise]]]&, #, {2} ], lat, rec, pos,
-        neighpos, \[Sigma]w, \[Beta], \[Delta]x, \[Delta]y, RTF]&, wavefBZ, {2}, DistributedContexts->All]
+      Map[wannierBaseRectProject[Abs@# * Map[Exp[I RandomVariate[NormalDistribution[Arg[#], \[Sigma]PhNoise]]]&, #, {2} ], lat, rec, pos,
+        neighpos, \[Sigma]w, \[Beta], \[Delta]x, \[Delta]y, RTF]&, wavefBZ, {2}];
 
 cnAtPhaseNoiseTab = Transpose[{\[Sigma]PhNoiseTab, Re@ParallelMap[1/(2 \[Pi] I )*Chop@Total@Total[FxyT[ CkModelNoisedBZ[#] ]]&, \[Sigma]PhNoiseTab, DistributedContexts->All]}];
 
