@@ -16,11 +16,11 @@ protocolAdd[ToString[t1] <> " Program started."];
 \[Delta]x = 0.1;
 \[Delta]y = 0.1;
 q = 2; (* Pi-flux *)
-xmin = -8;
-xmax = 8;
-ymin = -8;
-ymax = 8;
-RTF = 6;
+xmin = -5;
+xmax = 5;
+ymin = -5;
+ymax = 5;
+RTF = 5;
 rangeNeighbour = 0.6;
 a = 1;
 \[Sigma]w = 0.2;
@@ -78,15 +78,15 @@ support = Map[If[Norm[#] < RTF, 1, 0] &, lat, {2}];
     wannierNormalisationFactor[\[Sigma]w, \[Delta]x, \[Delta]y, lat];
 
 (**************************************************************)
-LaunchKernels[16];
+
 
 wavefBZ = ParallelMap[waveFunctionHarper[lat, a, J, J1, rec, RTF,
   #, \[Sigma]w, \[Beta], \[Delta]x, \[Delta]y]&, BZ, {2}, DistributedContexts->All];
 \[Sigma]PhNoiseTab = Table[\[Sigma]PhNoiseMin*\[Sigma]PhNoiseMult^i, {i, 0, Round@Log[\[Sigma]PhNoiseMax/\[Sigma]PhNoiseMin]/Log[\[Sigma]PhNoiseMult]}]
 
 CkModelNoisedBZ[\[Sigma]PhNoise_] :=
-      Map[wannierBaseRectProject[Abs@# * Map[Exp[I RandomVariate[NormalDistribution[Arg[#], \[Sigma]PhNoise]]]&, #, {2} ], lat, rec, pos,
-        neighpos, \[Sigma]w, \[Beta], \[Delta]x, \[Delta]y, RTF]&, wavefBZ, {2}]
+      ParallelMap[wannierBaseRectProject[Abs@# * Map[Exp[I RandomVariate[NormalDistribution[Arg[#], \[Sigma]PhNoise]]]&, #, {2} ], lat, rec, pos,
+        neighpos, \[Sigma]w, \[Beta], \[Delta]x, \[Delta]y, RTF]&, wavefBZ, {2}, DistributedContexts->All]
 
 cnAtPhaseNoiseTab = Transpose[{\[Sigma]PhNoiseTab, Re@ParallelMap[1/(2 \[Pi] I )*Chop@Total@Total[FxyT[ CkModelNoisedBZ[#] ]]&, \[Sigma]PhNoiseTab, DistributedContexts->All]}];
 

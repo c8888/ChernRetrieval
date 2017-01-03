@@ -2,7 +2,7 @@
 
 #PBS -N cn_PhNoise
 
-#PBS -q mp16
+#PBS -q mp8
 
 #PBS -l cput=240:00:00
 
