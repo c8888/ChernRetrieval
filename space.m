@@ -22,6 +22,9 @@ latticeProbingPointsBZ::usage =
 rectLatticeSites::usage =
     "rectLatticeSites[ax, ay, RTF, latticeProbingPoints] generates a list: {{x_i,y_i},type_i} are the rectangular lattice sites, where type_i is the i-th lattice site type (-1 - type A or 1 - type B)
     "
+rectLatticeSitesQ::usage =
+    "rectLatticeSites[ax, ay, RTF, latticeProbingPoints, q] generates a list: {{x_i,y_i},type_i} are the rectangular lattice sites, where type_i is the i-th lattice site type 1...q
+    "
 rectLatticeSitesPos::usage =
     "returns something"
 rectLatticeSitesNeighbourhood::usage =
@@ -71,6 +74,21 @@ rectLatticeSites[a_, RTF_, xmin_, xmax_, ymin_, ymax_]:=
       ];
       Return[N@sitesij]
       ]
+
+rectLatticeSitesQ[a_, RTF_, xmin_, xmax_, ymin_, ymax_, q_]:=
+    Module[ {
+      sitesij = {}
+    },
+      For[i = -Floor[RTF/a], i <= Floor[RTF/a], i++,
+        For[j = -Floor[RTF/a], j <= Floor[RTF/a], j++,
+          If[
+            Norm@N[{i*a, j*a}] <= RTF && i*a >= xmin &&  i*a <= xmax && j*a >= ymin && j*a <=ymax,
+            AppendTo[sitesij, {N@{N[i*a], N[j*a]}, Mod[i, q] + 1}]
+          ]
+        ]
+      ];
+      Return[sitesij]
+    ]
 
 
 rectLatticeSitesPos[latticeProbingPoints_, a_, \[Delta]x_, \[Delta]y_, RTF_] := Module[{ (*TODO: RTF cannot be an odd multiple of 0.5a. Otherwise the algorithm crashes. *)
