@@ -30,7 +30,7 @@ nIterations = 1000;
 nRepeats = 3;
 nHIO = 20;
 gamma = 0.9;
-npts = 10;(*points in the 1st Brillouin zone*)
+npts = 8;(*points in the 1st Brillouin zone*)
 n = 3; (* band number 1...q *)
 (**************************************************************)
 protocolBar[];
