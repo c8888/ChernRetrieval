@@ -30,7 +30,7 @@ nIterations = 1000;
 nRepeats = 3;
 nHIO = 20;
 gamma = 0.9;
-npts = 8;(*points in the 1st Brillouin zone*)
+npts = 10;(*points in the 1st Brillouin zone*)
 n = 3; (* band number 1...q *)
 (**************************************************************)
 protocolBar[];
@@ -54,6 +54,7 @@ protocolAdd["nRepeats = "<> ToString[nRepeats] ];
 protocolAdd["nHIO = "<> ToString[nHIO] ];
 protocolAdd["gamma = "<> ToString[gamma] ];
 protocolAdd["npts = "<> ToString[npts] ];
+protocolAdd["n = "<> ToString[n] ];
 protocolBar[];
 
 (**************************************************************)
@@ -77,7 +78,7 @@ support = Map[If[Norm[#] < RTF, 1, 0] &, lat, {2}];
 
 
 (**************************************************************)
-ckModelBZ =
+(*ckModelBZ =
     ParallelMap[
       findCkModelQ[#, J, J1, lat, a, rec, RTF, support, nIterations,
         nRepeats, nHIO, gamma, pos,
@@ -87,23 +88,23 @@ wModel = 1/(2 \[Pi] I )*Chop@Total@Total[FxyTModel];
 protocolAdd["wModel = " <> ToString[wModel]];
 (*PutAppend[ "wModel = " <> ToString[wModel], "out/" <> ToString[$ProcessID] <> "protocol.txt"];*)(*
 *)(*Export["out/ckModelBZ.dat", ckModelBZ];*)(*
-
+*)
 *)(**************************************************************)
 
-(*ckRetrSupportBZ =
+ckRetrSupportBZ =
     ParallelMap[
-      findCkRetrSupport[#, J, J1, lat, a, rec, RTF, support, nIterations,
+      findCkRetrSupportQ[#, J, J1, lat, a, rec, RTF, support, nIterations,
         nRepeats, nHIO, gamma, pos,
-        neighpos, \[Sigma]w, \[Beta], \[Delta]x, \[Delta]y] &, BZ, {2}, DistributedContexts->All];
+        neighpos, \[Sigma]w, \[Beta], \[Delta]x, \[Delta]y, q, n] &, BZ, {2}, DistributedContexts->All];
 FxyTRetrSupport = FxyT[ ckRetrSupportBZ[[All, All, 1]] ];
 wRetrSupport = 1/(2 \[Pi] I )*Chop@Total@Total[FxyTRetrSupport];
 protocolAdd[ "wRetrSupport = " <> ToString[wRetrSupport] <> " with mean overlap: " <> ToString[Mean@Flatten@ckRetrSupportBZ[[All, All, 2]] ] <> " stDev: " <> ToString[StandardDeviation@Flatten@ckRetrSupportBZ[[All, All, 2]] ] ];
-Export["out/" <> ToString[$ProcessID] <>"ckRetrSupportBZ.dat", ckRetrSupportBZ];
+(*Export["out/" <> ToString[$ProcessID] <>"ckRetrSupportBZ.dat", ckRetrSupportBZ];
 Export["out/" <> ToString[$ProcessID] <>"FxyTRetrSupport.dat", FxyTRetrSupport];
 (*Export["out/" <> ToString[$ProcessID] <> "retr_overlap.pdf", ListPlot@Flatten@ckRetrBZ[[All,All,2]]];
 (**************************************************************)
-*)
-*)
+*)*)
+
 t2 = DateList[];
 protocolMaxMemoryUsed[];
 protocolAdd[ToString[t2] <> " Program evaluated successfully. Total time taken: YMDHMS " <> ToString[t2-t1]];
