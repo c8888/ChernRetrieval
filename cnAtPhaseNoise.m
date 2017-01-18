@@ -15,12 +15,12 @@ protocolAdd[ToString[t1] <> " Program started."];
 (**************************************************************)
 \[Delta]x = 0.1;
 \[Delta]y = 0.1;
-q = 2; (* Pi-flux *)
-xmin = -2;
-xmax = 2;
-ymin = -2;
-ymax = 2;
-RTF = 2;
+q = 5; (* Pi-flux *)
+xmin = -5;
+xmax = 5;
+ymin = -5;
+ymax = 5;
+RTF = 3.6;
 rangeNeighbour = 0.6;
 a = 1;
 \[Sigma]w = 0.2;
@@ -31,11 +31,12 @@ nIterations = 500;
 nRepeats = 4;
 nHIO = 20;
 gamma = 0.9;
-npts = 2;(*points in the 1st Brillouin zone*)
+npts = 10;(*points in the 1st Brillouin zone*)
+n = 3;
 (**************************************************************)
-\[Sigma]PhNoiseMin = 0.000001; (* every iterStep iterations the overlap and chern number are computed *)
+\[Sigma]PhNoiseMin = 0.001; (* every iterStep iterations the overlap and chern number are computed *)
 \[Sigma]PhNoiseMax = 16;
-\[Sigma]PhNoiseMult = 1.1;
+\[Sigma]PhNoiseMult = 1.01;
 (***************z***********************************************)
 
 protocolBar[];
@@ -59,6 +60,7 @@ protocolAdd["nRepeats = "<> ToString[nRepeats] ];
 protocolAdd["nHIO = "<> ToString[nHIO] ];
 protocolAdd["gamma = "<> ToString[gamma] ];
 protocolAdd["npts = "<> ToString[npts] ];
+protocolAdd["n = "<> ToString[n] ];
 protocolBar[];
 (*************************************************************)
 (*************************************************************)
@@ -80,8 +82,8 @@ support = Map[If[Norm[#] < RTF, 1, 0] &, lat, {2}];
 (**************************************************************)
 
 
-wavefBZ = ParallelMap[waveFunctionHarper[lat, a, J, J1, rec, RTF,
-  #, \[Sigma]w, \[Beta], \[Delta]x, \[Delta]y]&, BZ, {2}, DistributedContexts->All];
+wavefBZ = ParallelMap[waveFunctionHarperQ[lat, a, J, J1, rec, RTF,
+  #, \[Sigma]w, \[Beta], \[Delta]x, \[Delta]y, q, n]&, BZ, {2}, DistributedContexts->All];
 \[Sigma]PhNoiseTab = Table[\[Sigma]PhNoiseMin*\[Sigma]PhNoiseMult^i, {i, 0, Round@Log[\[Sigma]PhNoiseMax/\[Sigma]PhNoiseMin]/Log[\[Sigma]PhNoiseMult]}]
 
 CkModelNoisedBZ[\[Sigma]PhNoise_] :=
@@ -93,7 +95,7 @@ cnAtPhaseNoiseTab = Transpose[{\[Sigma]PhNoiseTab, Re@ParallelMap[1/(2 \[Pi] I )
 protocolAdd[ "\[Sigma]PhaseNoise" <> " " <> "Chern number" ];
 
 
-Export["out/" <>ToString[Last@$CommandLine] <> "_" <> ToString[$ProcessID] <> "cnAtPhaseNoise.dat", cnAtPhaseNoiseTab];
+Export["out/" <>ToString[Last@$CommandLine] <> "_" <> ToString[$ProcessID] <> "cnAtPhaseNoiseQ.dat", cnAtPhaseNoiseTab];
 
 
 

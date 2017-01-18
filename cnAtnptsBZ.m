@@ -15,7 +15,7 @@ protocolAdd[ToString[t1] <> " Program started."];
 (**************************************************************)
 \[Delta]x = 0.1;
 \[Delta]y = 0.1;
-q = 2; (* Pi-flux *)
+q = 5; (* Pi-flux *)
 xmin = -5;
 xmax = 5;
 ymin = -5;
@@ -32,6 +32,7 @@ nRepeats = 3;
 nHIO = 20;
 gamma = 0.9;*)
 (*npts = 5;(*points in the 1st Brillouin zone*)*)
+n = 3;
 (**************************************************************)
 nptsmin = 2; (* integer values *)
 nptsmax = 15;
@@ -59,6 +60,7 @@ protocolAdd["nRepeats = "<> ToString[nRepeats] ];
 protocolAdd["nHIO = "<> ToString[nHIO] ];
 protocolAdd["gamma = "<> ToString[gamma] ];
 protocolAdd["npts = "<> ToString[npts] ];
+protocolAdd["n = "<> ToString[n]];
 protocolBar[];
 
 (***************************************************)
@@ -97,9 +99,9 @@ Map[Module[{
 
   ckModelBZ =
       ParallelMap[
-        findCkModel[#, J, J1, lat, a, rec, RTF, support, nIterations,
+        findCkModelQ[#, J, J1, lat, a, rec, RTF, support, nIterations,
           nRepeats, nHIO, gamma, pos,
-          neighpos, \[Sigma]w, \[Beta], \[Delta]x, \[Delta]y] &, BZ, {2}, DistributedContexts->All];
+          neighpos, \[Sigma]w, \[Beta], \[Delta]x, \[Delta]y, q, n] &, BZ, {2}, DistributedContexts->All];
   FxyTModel = FxyT[ ckModelBZ ];
   wModel = 1/(2 \[Pi] I )*Chop@Total@Total[FxyTModel];
 
@@ -111,7 +113,7 @@ Map[Module[{
 ];
 
 
-Export["out/" <>ToString[Last@$CommandLine] <> "_" <> ToString[$ProcessID] <> "chernNumberAtnpts.dat", nptsReport];
+Export["out/" <>ToString[Last@$CommandLine] <> "_" <> ToString[$ProcessID] <> "chernNumberAtnptsQ.dat", nptsReport];
 (*Export["out/" <>ToString[Last@$CommandLine] <> "_" <> ToString[$ProcessID] <> "chernNumberAtnptsPlot.pdf",
   ListPlot[nptsReport[[All,1;;2]]]];*)
 
