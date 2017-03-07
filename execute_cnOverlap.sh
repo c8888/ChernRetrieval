@@ -1,12 +1,12 @@
 #!/bin/sh
 
-#PBS -N cn_Overlap
+#PBS -N nyx
 
-#PBS -q vlong
+#PBS -q long
 
-#PBS -l cput=240:00:00
+#PBS -l cput=72:00:00
 
 #PBS -m abe
 
 cd $HOME/ChernRetrieval/
-/usr/local/math10/Executables/math -script cnAtOverlap.m
+math -script cnAtOverlapQ.m
