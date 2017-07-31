@@ -4,6 +4,11 @@
 (* :Author: c8888 *)
 (* :Date: 2016-12-11 *)
 
+(* To disable multithreading (used by Eigensystem[] and other functions by default!) use commands:
+SetSystemOptions["ParallelOptions" -> "ParallelThreadNumber" -> 1];
+SetSystemOptions["ParallelOptions" -> "MKLThreadNumber" -> 1];
+*)
+
 Needs["wavefunction`"];
 Needs["HIOER`"];
 Needs["space`"];
