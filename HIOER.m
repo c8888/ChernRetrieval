@@ -15,8 +15,8 @@
 
 BeginPackage["HIOER`"]
 (* Exported symbols added here with SymbolName::usage *)
-Needs["protocoling`"]
-
+Needs["protocoling`"];
+Needs["space`"];
 
 phaseRetrieveSupport::usage =
     "phaseRetrieveSupport[FTXAbs, support, nIterations, nHIO] returns a table of retrieved complex X from its (representation in reciprocal space) absolute value FTXAbs.
@@ -90,7 +90,7 @@ phaseRetrieveSupport[FTXAbs_, support_, nIterations_, nRepeats_, nHIO_, gamma_]:
           xiprim = xi;
           FTxi = Fourier[xi];
           FTxi = FTXAbs*Exp[I*Arg[FTxi]];
-          xi = InverseFourier[FTxi];
+          xi = mirror2DSpace@InverseFourier[FTxi];
           If[Unequal[Mod[i,nHIO],0],
           (* HIO case *) xi=Table[If[support[[q,w]] == 1,
           (* inside support*) xi[[q,w]],

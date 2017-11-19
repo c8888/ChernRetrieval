@@ -153,6 +153,34 @@ waveFunctionHarper[latticeProbingPoints_, a_, J_, J1_, rectLatticeSites_, RTF_, 
     ret/Sqrt[Total[Total[Abs[ret]^2]] * \[Delta]x * \[Delta]y]
   ]
 
+interferenceProfileSin[k0x_, k0y_, kx_, ky_, n_, m_, a_] :=
+    Which[Mod[a (kx - k0x), Pi] != 0,
+      Sin[(2. n + 1.) a (kx - k0x)]/Sin[a (kx - k0x)]*
+          Which[Mod[a (ky - k0y), Pi] != 0,
+            Sin[(m + 0.5) a (ky - k0y)]/Sin[0.5 a (ky - k0y)],
+            Mod[a (ky - k0y), Pi] == 0, (2 m + 1.)],
+      Mod[kx, k0x] == 0, (2 n + 1.)*
+        Which[Mod[a (ky - k0y), Pi] != 0,
+          Sin[(m + 0.5) a (ky - k0y)]/Sin[0.5 a (ky - k0y)],
+          Mod[ky, k0y] == 0, (2 m + 1.)]
+    ]
+
+waveFunctionABKspace[a_, \[Delta]kx_, \[Delta]ky_, hamiltonian___, k0_, n_, m_, nkx_, nky_, \[Sigma]w_] :=
+    Module[{
+      ret,
+      elementaryCell,
+      thetaK0,
+      phiK0
+    },
+      thetaK0=Pi/4; phiK0=Pi/2; (* DEBUG MODE *)
+      ret = Table[
+        interferenceProfileSin[k0[[1]], k0[[2]], kx, ky, n, m, a] * Exp[-((kx-k0[[1]])^2 + (ky-k0[[2]])^2)*\[Sigma]w^2/2],
+        {kx, -nkx 1.Pi/(2a), nkx 1.Pi/(2a), \[Delta]kx},
+        {ky, -nky 1.Pi/a, nky 1.Pi/a, \[Delta]ky}
+      ];
+      ret/Sqrt[Total[Total[Abs[ret]^2]] * \[Delta]kx * \[Delta]ky]
+    ]
+
 wannierBaseRectProject[waveFunction_, latticeProbingPoints_, rectLatticeSites_, rectLatticeSitesPos_, rectLatticeSitesNeighbourhood_, \[Sigma]w_, wannierNormalisationFactor_, \[Delta]x_, \[Delta]y_,RTF_] :=
     Module[{
       ret
